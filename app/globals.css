@@ -2,26 +2,203 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+* {
+  color: #1a1f27;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+.overflow-ellipsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* 두 줄로 제한 */
+}
+
+.fade-in {
+  animation: fadeIn 3s;
+  -moz-animation: fadeIn 3s; /* Firefox */
+  -webkit-animation: fadeIn 3s; /* Safari and Chrome */
+  -o-animation: fadeIn 3s; /* Opera */
+}
+
+.fade-in-fast {
+  animation: fadeIn 0.25s;
+  -moz-animation: fadeIn 0.25s; /* Firefox */
+  -webkit-animation: fadeIn 0.25s; /* Safari and Chrome */
+  -o-animation: fadeIn 0.25s; /* Opera */
+}
+
+.bright-in {
+  animation: brightIn 3s;
+  -moz-animation: brightIn 3s; /* Firefox */
+  -webkit-animation: brightIn 3s; /* Safari and Chrome */
+  -o-animation: brightIn 3s; /* Opera */
+}
+
+.box-shadow {
+  box-shadow: 0.25px 1px 1px rgb(255, 255, 255);
+  transition: box-shadow 0.325s;
+}
+
+.box-shadow:focus,
+.box-shadow:hover {
+  box-shadow: 0.25px 1px 1px 0 rgba(0, 0, 0, 0.2),
+    0.25px 1px 4px 0 rgba(0, 0, 0, 0.19);
+}
+
+/* CKEDITOR5 CSS */
+.ck-editor__editable:not(.ck-editor__nested-editable) {
+  min-height: 30rem;
+  padding: 0.4rem 0.75rem !important;
+  overflow: auto !important;
+}
+
+.ck.ck-toolbar {
+  background-color: #fafafa !important;
+}
+
+.ck {
+  letter-spacing: 0.005rem;
+}
+
+.ck h2,
+h3,
+h4 {
+  font-weight: 700;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e2e4e7;
+}
+
+.ck h2 {
+  line-height: 1.25;
+  font-size: 2em;
+  padding-bottom: 0.3em;
+}
+
+.ck h3 {
+  font-size: 1.5em;
+  padding-bottom: 0.5rem;
+}
+
+.ck h4 {
+  font-size: 1.25em;
+  padding-bottom: 0.375rem;
+}
+
+.ck ul {
+  margin-left: 1rem;
+}
+
+.ck blockquote {
+  font-style: normal !important;
+  padding: 1rem 1.75rem !important;
+  border-left: 0.25rem solid #2fc27b !important;
+  background-color: #fafcfe;
+}
+
+/* uiw markdown(Editor) CSS */
+.md-editor {
+  margin: 0.25rem;
+}
+
+.md-editor blockquote {
+  padding: 1rem 1.75rem !important;
+  border-left: 0.25rem solid #2fc27b !important;
+  background-color: #fafcfe;
+}
+
+/* uiw markdown(Preview) CSS */
+.markdown-preview {
+  letter-spacing: 0.04rem;
+}
+
+.markdown-preview ul {
+  list-style-type: disc;
+}
+
+.markdown-preview blockquote {
+  padding: 1rem 1.75rem !important;
+  border-left: 0.25rem solid #2fc27b !important;
+  background-color: #fafcfe;
+}
+
+.markdown-preview img {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* --------------- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  /* Firefox */
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  /* Safari and Chrome */
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-o-keyframes fadeIn {
+  /* Opera */
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* --------------- */
+
+@keyframes brightIn {
+  from {
+    filter: brightness(80%);
+  }
+  to {
+    filter: brightness(100%);
+  }
+}
+@-moz-keyframes brightIn {
+  /* Firefox */
+  from {
+    filter: brightness(80%);
+  }
+  to {
+    filter: brightness(100%);
+  }
+}
+@-webkit-keyframes brightIn {
+  /* Safari and Chrome */
+  from {
+    filter: brightness(80%);
+  }
+  to {
+    filter: brightness(100%);
+  }
+}
+@-o-keyframes brightIn {
+  /* Opera */
+  from {
+    filter: brightness(80%);
+  }
+  to {
+    filter: brightness(100%);
+  }
 }
