@@ -6,7 +6,7 @@
   color: #1a1f27;
 }
 
-.overflow-ellipsis {
+.lab-intro-text-overflow-ellipsis {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2; /* 두 줄로 제한 */
