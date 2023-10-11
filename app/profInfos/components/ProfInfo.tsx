@@ -40,7 +40,7 @@ export default function ProfInfo() {
               className={`w-[11.5rem] text-xs overflow-hidden ${
                 isLabIntroTextFullVisible
                   ? 'whitespace-normal h-auto'
-                  : 'overflow-ellipsis whitespace-normal h-8 leading-4'
+                  : 'lab-intro-text-overflow-ellipsis whitespace-normal h-8 leading-4'
               } cursor-pointer hover:underline`}
             >
               소프트웨어 개발, 운영, 및 관리 활동에 체계적이고 정량적인
