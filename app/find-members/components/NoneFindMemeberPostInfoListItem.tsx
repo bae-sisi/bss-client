@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function NoneFindMemeberPostInfo() {
+export default function NoneFindMemeberPostInfoListItem() {
   return (
     <tr className='border-b dark:border-gray-700 text-xs text-center'>
       <th
@@ -9,7 +9,7 @@ export default function NoneFindMemeberPostInfo() {
       >
         1
       </th>
-      <td className='text-sm'>등록된 모집 정보가 없습니다</td>
+      <td className='text-sm'>조회된 모집 정보가 없습니다</td>
       <td className='font-medium'>-</td>
       <td className='font-medium'>-</td>
       <td className='font-medium'>-</td>
