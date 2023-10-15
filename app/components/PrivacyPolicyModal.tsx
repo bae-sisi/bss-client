@@ -1,23 +1,25 @@
 import { Modal } from 'flowbite-react';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface PrivacyPolicyModalProps {
-  openModal: string | undefined;
-  setOpenModal: React.Dispatch<React.SetStateAction<string | undefined>>;
+  openPrivacyPolicyModal: string | undefined;
+  setOpenPrivacyPolicyModal: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
 }
 
 export default function PrivacyPolicyModal({
-  openModal,
-  setOpenModal,
+  openPrivacyPolicyModal,
+  setOpenPrivacyPolicyModal,
 }: PrivacyPolicyModalProps) {
   return (
     <Modal
-      show={openModal === 'default'}
-      onClose={() => setOpenModal(undefined)}
+      show={openPrivacyPolicyModal === 'default'}
+      onClose={() => setOpenPrivacyPolicyModal(undefined)}
       className='fade-in-fast'
     >
       <Modal.Header>개인정보처리방침</Modal.Header>
-      <Modal.Body>
+      <Modal.Body className='max-h-[27.5rem]'>
         <div className='space-y-6'>
           <p className='text-xs leading-relaxed text-gray-500 dark:text-gray-400'>
             베시시는 개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을
@@ -170,9 +172,9 @@ export default function PrivacyPolicyModal({
           </p>
         </div>
       </Modal.Body>
-      <Modal.Footer className='ml-auto'>
+      <Modal.Footer className='ml-auto border-none'>
         <button
-          onClick={() => setOpenModal(undefined)}
+          onClick={() => setOpenPrivacyPolicyModal(undefined)}
           className='text-white bg-[#3870e0] px-4 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#3464c2] hover:bg-[#3464c2] box-shadow'
         >
           닫기
