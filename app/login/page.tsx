@@ -6,6 +6,7 @@ import { AppDispatch, useAppSelector } from '../redux/store';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
+import Link from 'next/link';
 
 export default function Login() {
   const STR_RIGHT_CASE_INPUT_ELEMENT_STYLE_CLASSNAME =
@@ -17,7 +18,10 @@ export default function Login() {
   const STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME =
     'absolute text-sm text-gray-500 dark:text-gray-400 duration-150 transform -translate-y-[1.07rem] scale-75 top-2 origin-[0] bg-white dark:bg-gray-900 px-1 peer-focus:px-1 peer-focus:text-[#c84031] peer-focus:dark:text-[#c84031] peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-2';
 
-  const [userAccountInfo, setUserAccountInfo] = useState({ id: '', pwd: '' });
+  const [userAccountInfo, setUserAccountInfo] = useState({
+    id: '',
+    pwd: '',
+  });
   const [idInputAnnounceMsg, setIdInputAnnouceMsg] = useState('');
   const [pwdInputAnnounceMsg, setPwdInputAnnouceMsg] = useState('');
   const [idInputElementStyle, setIdInputElementStyle] = useState(
@@ -32,7 +36,9 @@ export default function Login() {
   const [pwdLabelElementStyle, setPwdLabelElementStyle] = useState(
     STR_RIGHT_CASE_LABEL_ELEMENT_STYLE_CLASSNAME
   );
-  const [openModal, setOpenModal] = useState<string | undefined>();
+  const [openPrivacyPolicyModal, setOpenPrivacyPolicyModal] = useState<
+    string | undefined
+  >();
 
   const idInputRef = useRef<HTMLInputElement>(null);
   const pwdInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +74,7 @@ export default function Login() {
       return;
     }
 
-    if (userAccountInfo.id !== 'test') {
+    if (userAccountInfo.id !== '111' && userAccountInfo.id !== '222') {
       idInputRef.current?.focus();
       setIdInputAnnouceMsg('등록되지 않은 사용자입니다.');
       setIdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
@@ -76,7 +82,7 @@ export default function Login() {
       return;
     }
 
-    if (userAccountInfo.pwd !== 'thwndeks123!') {
+    if (userAccountInfo.pwd !== 'asd!') {
       pwdInputRef.current?.focus();
       setPwdInputAnnouceMsg('잘못된 비밀번호입니다.');
       setPwdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
@@ -85,7 +91,22 @@ export default function Login() {
     }
 
     router.push('/');
-    dispatch(signIn(userAccountInfo));
+
+    if (userAccountInfo.id === '111') {
+      const userInfo = {
+        username: '관리자',
+        uid: userAccountInfo.id,
+        isAdmin: true,
+      };
+      dispatch(signIn(userInfo));
+    } else if (userAccountInfo.id === '222') {
+      const userInfo = {
+        username: '테스트',
+        uid: userAccountInfo.id,
+        isAdmin: false,
+      };
+      dispatch(signIn(userInfo));
+    }
   };
 
   useEffect(() => {
@@ -107,7 +128,6 @@ export default function Login() {
               className='mx-auto mb-1'
             />
             <p>로그인</p>
-            <p className='text-sm'>개인 계정 사용</p>
           </div>
 
           <form>
@@ -131,7 +151,7 @@ export default function Login() {
                   htmlFor='floating_outlined'
                   className={idLabelElementStyle}
                 >
-                  학번 또는 교번
+                  학번
                 </label>
               </div>
               {idInputAnnounceMsg && (
@@ -199,25 +219,23 @@ export default function Login() {
               )}
             </div>
             <div className='h-36 flex flex-col mt-[0.625rem] justify-between text-left mb-6'>
-              <a
-                href='https://sw7up.cbnu.ac.kr/account/password'
-                target='_blank'
+              <Link
+                href='/resetPassword'
                 className='text-[#437ae1] text-[0.8rem] font-semibold w-fit'
               >
                 비밀번호를 잊으셨나요?
-              </a>
+              </Link>
               <div className='text-[0.8rem] text-gray-600'>
                 내 컴퓨터가 아닌가요? 게스트 모드를 사용하여 비공개로
                 로그인하세요.
               </div>
               <div className='flex justify-between items-center'>
-                <a
-                  href='https://sw7up.cbnu.ac.kr/account/password'
-                  target='_blank'
+                <Link
+                  href='/register'
                   className='text-[#437ae1] translate-x-[-0.5rem] text-[0.8rem] font-normal px-2 py-1 hover:bg-[#f3f4f5] rounded-[0rem] focus:bg-[#f3f4f5]'
                 >
                   계정 만들기
-                </a>
+                </Link>
                 <button
                   type='submit'
                   onClick={handleSignIn}
@@ -235,13 +253,13 @@ export default function Login() {
           </div>
         </div>
         <div className='flex mt-5 text-[0.6rem] text-gray-700 justify-end'>
-          <button onClick={() => setOpenModal('default')}>
+          <button onClick={() => setOpenPrivacyPolicyModal('default')}>
             개인정보처리방침
           </button>
-          {openModal ? (
+          {openPrivacyPolicyModal ? (
             <PrivacyPolicyModal
-              openModal={openModal}
-              setOpenModal={setOpenModal}
+              openPrivacyPolicyModal={openPrivacyPolicyModal}
+              setOpenPrivacyPolicyModal={setOpenPrivacyPolicyModal}
             />
           ) : null}
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Loading from '@/app/loading';
+import { useAppSelector } from '@/app/redux/store';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -11,23 +12,31 @@ const MarkdownPreview = dynamic(
 );
 
 export default function FindMemeberDetail() {
-  const [isExamPostReady, setIsExamPostReady] = useState(false);
+  const [isFindMemberPostReady, setIsFindMemberPostReady] = useState(false);
   const [isMarkdownPreviewReady, setIsMarkdownPreviewReady] = useState(false);
+
+  const uid = useAppSelector((state) => state.authReducer.value.uid);
+  const isAdmin = useAppSelector((state) => state.authReducer.value.isAdmin);
+
   const router = useRouter();
 
-  const handleDeleteExam = () => {
-    let userResponse = confirm('현재 팀원모집 게시글을 삭제하시겠습니까?');
+  const handleDeleteFindMemberPost = () => {
+    let userResponse = confirm('게시글을 삭제하시겠습니까?');
     if (!userResponse) return;
     alert('게시글을 삭제하였습니다.');
-    router.push('/findMembers');
+    router.push('/find-members');
+  };
+
+  const handleEditFindMemberPost = () => {
+    router.push(`/find-members/${'645f82d1dfc11e0020d07253'}/edit`);
   };
 
   useEffect(() => {
     setIsMarkdownPreviewReady(true);
-    setIsExamPostReady(true);
+    setIsFindMemberPostReady(true);
   }, []);
 
-  return isExamPostReady && isMarkdownPreviewReady ? (
+  return isFindMemberPostReady && isMarkdownPreviewReady ? (
     <div className='mt-6 mb-24 px-5 2lg:px-0 overflow-x-auto'>
       <div className='flex flex-col w-[60rem] mx-auto'>
         <div className='flex flex-col'>
@@ -47,19 +56,20 @@ export default function FindMemeberDetail() {
                 </span>
                 <span className='relative bottom-[0.055rem] font-thin before:content-["|"]' />
                 <span className='font-semibold'>
-                  모집 기간:
+                  모집 기간:{' '}
                   {/* <span className="text-red-500 font-bold">
-                  {' '}
                   49분 45초 남음
                 </span> */}
-                  <span className='font-light'>
-                    {' '}
+                  {/* <span className='font-light'>
                     2023:07:13 17:00 ~ 2023.07.13 18:00{' '}
                     <span className='text-blue-500 font-semibold'>
                       (41분 3초 전)
                     </span>
+                  </span> */}
+                  <span className='font-light'>
+                    2023:07:13 17:00 ~ 2023.07.13 18:00{' '}
+                    <span className='text-red-500 font-bold'>(종료)</span>
                   </span>
-                  {/* <span className="text-red-500 font-bold"> 종료</span> */}
                 </span>
                 <span className='relative bottom-[0.055rem] font-thin before:content-["|"]' />
                 <span className='font-semibold'>
@@ -94,44 +104,48 @@ export default function FindMemeberDetail() {
 
 - **이메일**: [이메일 주소 입력]
 - **디스코드**: [디스코드 닉네임 및 번호 입력]
-- 또는 댓글로 관심 표시해주세요!
               `}
             />
           </div>
-          <div>
-            <div className='flex gap-3 justify-end'>
-              <button
-                onClick={() => alert('개발 예정')}
-                className='flex gap-[0.375rem] items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  height='20'
-                  viewBox='0 -960 960 960'
-                  width='20'
-                  fill='white'
+
+          {uid === '222' || isAdmin ? (
+            <div>
+              <div className='flex gap-3 justify-end'>
+                {uid === '222' ? (
+                  <button
+                    onClick={handleEditFindMemberPost}
+                    className='flex gap-[0.375rem] items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      height='20'
+                      viewBox='0 -960 960 960'
+                      width='20'
+                      fill='white'
+                    >
+                      <path d='M794-666 666-794l42-42q17-17 42.5-16.5T793-835l43 43q17 17 17 42t-17 42l-42 42Zm-42 42L248-120H120v-128l504-504 128 128Z' />
+                    </svg>
+                    게시글 수정
+                  </button>
+                ) : null}
+                <button
+                  onClick={handleDeleteFindMemberPost}
+                  className='flex gap-[0.375rem] items-center text-white bg-red-500 px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#e14343] hover:bg-[#e14343] box-shadow'
                 >
-                  <path d='M794-666 666-794l42-42q17-17 42.5-16.5T793-835l43 43q17 17 17 42t-17 42l-42 42Zm-42 42L248-120H120v-128l504-504 128 128Z' />
-                </svg>
-                게시글 수정
-              </button>
-              <button
-                onClick={handleDeleteExam}
-                className='flex gap-[0.375rem] items-center text-white bg-red-500 px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#e14343] hover:bg-[#e14343] box-shadow'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  height='20'
-                  viewBox='0 -960 960 960'
-                  width='20'
-                  fill='white'
-                >
-                  <path d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Z' />
-                </svg>
-                게시글 삭제
-              </button>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    height='20'
+                    viewBox='0 -960 960 960'
+                    width='20'
+                    fill='white'
+                  >
+                    <path d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Z' />
+                  </svg>
+                  게시글 삭제
+                </button>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>

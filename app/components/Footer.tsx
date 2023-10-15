@@ -7,20 +7,22 @@ export default function Footer() {
   // 현재 년도를 가져오기
   const currentYear = new Date().getFullYear();
 
-  const [openModal, setOpenModal] = useState<string | undefined>();
+  const [openPrivacyPolicyModal, setOpenPrivacyPolicyModal] = useState<
+    string | undefined
+  >();
 
   return (
     <div className='w-full flex justify-start mt-auto font-light text-[10px] py-5 px-3 leading-[1.175rem] bg-[#505050]'>
       <div className='flex flex-col 3xs:flex-row gap-10 justify-between mx-auto w-[60rem]'>
         <div>
           <div className='mb-5 mx-auto text-[#eee]'>
-            <button onClick={() => setOpenModal('default')}>
+            <button onClick={() => setOpenPrivacyPolicyModal('default')}>
               개인정보처리방침
             </button>
-            {openModal ? (
+            {openPrivacyPolicyModal ? (
               <PrivacyPolicyModal
-                openModal={openModal}
-                setOpenModal={setOpenModal}
+                openPrivacyPolicyModal={openPrivacyPolicyModal}
+                setOpenPrivacyPolicyModal={setOpenPrivacyPolicyModal}
               />
             ) : null}
           </div>

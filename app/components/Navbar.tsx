@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { AppDispatch, useAppSelector } from '../redux/store';
 import { useDispatch } from 'react-redux';
 import { signOut } from '../redux/features/authSlice';
 import { useRouter } from 'next/navigation';
+import { AppDispatch, useAppSelector } from '../redux/store';
 
 export default function Navbar() {
-  const [rightPos, setRightPos] = useState('-right-full');
-
   const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
   const username = useAppSelector((state) => state.authReducer.value.username);
+
+  const [rightPos, setRightPos] = useState('-right-full');
 
   const router = useRouter();
 
@@ -44,13 +44,13 @@ export default function Navbar() {
         <div className='hidden ml-16 2md:block'>
           <div className='flex gap-3 font-medium mx-auto'>
             <Link
-              href='/lectureReview'
+              href='/lecture-review'
               className='px-4 py-2 rounded-md hover:bg-[#f3f4f5] focus:bg-[#f3f4f5]'
             >
               강의평
             </Link>
             <Link
-              href='/profInfos'
+              href='/prof-infos'
               className='px-3 py-2 rounded-md hover:bg-[#f3f4f5] focus:bg-[#f3f4f5]'
             >
               교수정보
@@ -62,7 +62,7 @@ export default function Navbar() {
               행사
             </Link>
             <Link
-              href='/findMembers'
+              href='/find-members'
               className='px-3 py-2 rounded-md hover:bg-[#f3f4f5] focus:bg-[#f3f4f5]'
             >
               팀원모집
@@ -74,7 +74,7 @@ export default function Navbar() {
             {isAuth ? (
               <>
                 <Link
-                  href='/login'
+                  href='/mypage'
                   className='px-3 py-2 rounded-md hover:bg-[#f3f4f5]'
                 >
                   <span className='font-semibold'>{username}</span>님
@@ -137,7 +137,7 @@ export default function Navbar() {
                 {isAuth ? (
                   <>
                     <Link
-                      href='/login'
+                      href='/mypage'
                       onClick={(e) => {
                         e.stopPropagation();
                         setRightPos('-right-full');
@@ -182,7 +182,7 @@ export default function Navbar() {
                 )}
               </div>
               <Link
-                href='/lectureReview'
+                href='/lecture-review'
                 onClick={(e) => {
                   e.stopPropagation();
                   setRightPos('-right-full');
@@ -192,7 +192,7 @@ export default function Navbar() {
                 강의평
               </Link>
               <Link
-                href='/profInfos'
+                href='/prof-infos'
                 onClick={(e) => {
                   e.stopPropagation();
                   setRightPos('-right-full');
@@ -212,7 +212,7 @@ export default function Navbar() {
                 행사
               </Link>
               <Link
-                href='/findMembers'
+                href='/find-members'
                 onClick={(e) => {
                   e.stopPropagation();
                   setRightPos('-right-full');
