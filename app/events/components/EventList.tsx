@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Event from './Event';
-import NoneEventPostInfo from './NoneEventPostInfo';
+import EventListItem from './EventIListItem';
+import NoneEventPostInfoListItem from './NoneEventPostInfoListItem';
 
 export default function EventList() {
   const [isEventListReady, setIsEventListReady] = useState(false);
@@ -13,17 +13,18 @@ export default function EventList() {
 
   return isEventListReady ? (
     <tbody>
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
-      <Event />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
     </tbody>
-  ) : null;
-  // <NoneEventPostInfo />
+  ) : (
+    <NoneEventPostInfoListItem />
+  );
 }
