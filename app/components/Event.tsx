@@ -1,11 +1,15 @@
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export default function Event() {
   return (
     <div className='relative flex flex-col gap-4 bg-[#f7f7f7] p-3 group'>
       <p className='font-bold'>
-        <Link href='/' className='hover:underline'>
+        <Link
+          href='/events/645f82d1dfc11e0020d07253'
+          className='hover:underline'
+        >
           2023학년도 졸업작품전시회(캡스톤디자인전시회)일정 및 작품소개서 제출
           안내(~10/17)
         </Link>
