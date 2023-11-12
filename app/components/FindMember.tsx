@@ -5,7 +5,10 @@ export default function FindMember() {
   return (
     <div className='relative flex flex-col gap-4 bg-[#f7f7f7] p-3 group'>
       <p className='font-bold'>
-        <Link href='/' className='hover:underline'>
+        <Link
+          href='/find-members/645f82d1dfc11e0020d07253'
+          className='hover:underline'
+        >
           데이터베이스시스템 팀 프로젝트 팀원 모집
         </Link>
       </p>
