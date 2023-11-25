@@ -6,7 +6,7 @@ interface SubjectInfo {
 }
 
 type SubjectState = SubjectInfo & {
-  isSelected: boolean;
+  isSubjectSelected: boolean;
 };
 
 type initialState = {
@@ -17,7 +17,7 @@ const initialState = {
   value: {
     subjectName: '',
     profName: '',
-    isSelected: false,
+    isSubjectSelected: false,
   } as SubjectState,
 } as initialState;
 
@@ -30,7 +30,7 @@ export const selectSubject = createSlice({
         value: {
           subjectName: action.payload.subjectName,
           profName: action.payload.profName,
-          isSelected: true,
+          isSubjectSelected: true,
         },
       };
     },
