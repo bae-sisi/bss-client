@@ -7,14 +7,28 @@ import PostList from './PostList';
 import { useRouter } from 'next/navigation';
 import { initSelectedPostIds } from '../redux/features/selectedPostForDeleteSlice';
 import { useDispatch } from 'react-redux';
+import ModifyPasswordModal from './components/modifyPasswordModal';
+import ModifyUsernameModal from './components/modifyUsernameModal';
+import ModifyEmailModal from './components/modifyEmailModal';
 
 export default function Mypage() {
   const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
   const username = useAppSelector((state) => state.authReducer.value.username);
+  const email = useAppSelector((state) => state.authReducer.value.email);
   const uid = useAppSelector((state) => state.authReducer.value.uid);
   const selectedPostIds = useAppSelector(
     (state) => state.selectedPostForDeleteSlice.value.selectedPostIds
   );
+
+  const [openModifyPasswordModal, setOpenModifyPasswordModal] = useState<
+    string | undefined
+  >();
+  const [openModifyUsernameModal, setOpenModifyUsernameModal] = useState<
+    string | undefined
+  >();
+  const [openModifyEmailModal, setOpenModifyEmailModal] = useState<
+    string | undefined
+  >();
 
   const [isMypageReady, setIsMypageReady] = useState(false);
 
@@ -62,16 +76,52 @@ export default function Mypage() {
           <div className='flex items-center py-3 border-b'>
             <div className='w-44 text-sm'>비밀번호</div>
             <div className='w-80 font-bold'>********</div>
-            <button className='text-black border w-24 h-7 duration-200 hover:border-black'>
+            <button
+              onClick={() => setOpenModifyPasswordModal('default')}
+              className='text-black border w-24 h-7 duration-200 hover:border-black'
+            >
               비밀번호 변경
             </button>
+            {openModifyPasswordModal ? (
+              <ModifyPasswordModal
+                openModifyPasswordModal={openModifyPasswordModal}
+                setOpenModifyPasswordModal={setOpenModifyPasswordModal}
+              />
+            ) : null}
           </div>
           <div className='flex items-center py-3 border-b'>
             <div className='w-44 text-sm'>이름(실명)</div>
             <div className='w-80 font-bold'>{username}</div>
-            <button className='text-black border w-24 h-7 duration-200 hover:border-black'>
+            <button
+              onClick={() => setOpenModifyUsernameModal('default')}
+              className='text-black border w-24 h-7 duration-200 hover:border-black'
+            >
               이름 수정
             </button>
+            {openModifyUsernameModal ? (
+              <ModifyUsernameModal
+                openModifyUsernameModal={openModifyUsernameModal}
+                setOpenModifyUsernameModal={setOpenModifyUsernameModal}
+                username={username}
+              />
+            ) : null}
+          </div>
+          <div className='flex items-center py-3 border-b'>
+            <div className='w-44 text-sm'>이메일</div>
+            <div className='w-80 font-bold'>{email}</div>
+            <button
+              onClick={() => setOpenModifyEmailModal('default')}
+              className='text-black border w-24 h-7 duration-200 hover:border-black'
+            >
+              이메일 변경
+            </button>
+            {openModifyEmailModal ? (
+              <ModifyEmailModal
+                openModifyEmailModal={openModifyEmailModal}
+                setOpenModifyEmailModal={setOpenModifyEmailModal}
+                // email={email}
+              />
+            ) : null}
           </div>
         </div>
 
