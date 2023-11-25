@@ -37,8 +37,8 @@ export default function SubjectSearchModal({
   const profName = useAppSelector(
     (state) => state.selectSubjectInModal.value.profName
   );
-  const isSelected = useAppSelector(
-    (state) => state.selectSubjectInModal.value.isSelected
+  const isSubjectSelected = useAppSelector(
+    (state) => state.selectSubjectInModal.value.isSubjectSelected
   );
 
   const [isSearchedSubjectListReady, setIsSearchedSubjectListReady] =
@@ -71,7 +71,7 @@ export default function SubjectSearchModal({
   };
 
   const handleSelectSubjectButton = () => {
-    if (isSelected) {
+    if (isSubjectSelected) {
       setOpenSubjectSearchModal(undefined);
       const selectedSubjectInfo = {
         subjectName: subjectNameState,

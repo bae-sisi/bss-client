@@ -56,7 +56,7 @@ export default function FindMemeberDetail() {
                 </span>
                 <span className='relative bottom-[0.055rem] font-thin before:content-["|"]' />
                 <span className='font-semibold'>
-                  모집 기간:{' '}
+                  모집 종료 기간:{' '}
                   {/* <span className="text-red-500 font-bold">
                   49분 45초 남음
                 </span> */}
@@ -67,7 +67,7 @@ export default function FindMemeberDetail() {
                     </span>
                   </span> */}
                   <span className='font-light'>
-                    2023:07:13 17:00 ~ 2023.07.13 18:00{' '}
+                    2023.07.13 18:00{' '}
                     <span className='text-red-500 font-bold'>(종료)</span>
                   </span>
                 </span>
@@ -108,13 +108,24 @@ export default function FindMemeberDetail() {
             />
           </div>
 
-          {uid === '222' || isAdmin ? (
-            <div>
-              <div className='flex gap-3 justify-end'>
+          <div className='flex gap-3 justify-end'>
+            <div className='flex flex-col mr-auto items-center gap-2'>
+              <span className='self-start ml-2 text-black font-semibold'>
+                작성자 이메일
+              </span>
+              <a
+                href='mailto:gildong123@naver.com'
+                className='flex gap-[0.375rem] text-xs items-center underline text-blue-500 border border-gray-400 px-4 py-[0.25rem] rounded-[10rem] box-shadow'
+              >
+                gildong123@naver.com
+              </a>
+            </div>
+            {uid === '222' || isAdmin ? (
+              <>
                 {uid === '222' ? (
                   <button
                     onClick={handleEditFindMemberPost}
-                    className='flex gap-[0.375rem] items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
+                    className='flex gap-[0.375rem] h-9 items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
                   >
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -130,7 +141,7 @@ export default function FindMemeberDetail() {
                 ) : null}
                 <button
                   onClick={handleDeleteFindMemberPost}
-                  className='flex gap-[0.375rem] items-center text-white bg-red-500 px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#e14343] hover:bg-[#e14343] box-shadow'
+                  className='flex gap-[0.375rem] h-9 items-center text-white bg-red-500 px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#e14343] hover:bg-[#e14343] box-shadow'
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -143,9 +154,23 @@ export default function FindMemeberDetail() {
                   </svg>
                   게시글 삭제
                 </button>
-              </div>
+              </>
+            ) : null}
+          </div>
+          <div className='flex flex-col mt-8 mb-5 gap-2'>
+            <span className='text-black ml-2 font-semibold'>모집 포지션</span>
+            <div className='flex gap-2 text-xs'>
+              <span className='w-fit  px-3 py-[0.25rem] border border-gray-400 rounded-[10rem] box-shadow'>
+                Frontend
+              </span>
+              <span className='w-fit px-3 py-[0.25rem] border border-gray-400 rounded-[10rem] box-shadow'>
+                Backend
+              </span>
+              <span className='w-fit px-3 py-[0.25rem] border border-gray-400 rounded-[10rem] box-shadow'>
+                DevOps
+              </span>
             </div>
-          ) : null}
+          </div>
         </div>
       </div>
     </div>
