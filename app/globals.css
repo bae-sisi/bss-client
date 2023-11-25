@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  color: #1a1f27;
+  color: #353d4a;
 }
 
 .lab-intro-text-overflow-ellipsis {
@@ -44,57 +44,6 @@
     0.25px 1px 4px 0 rgba(0, 0, 0, 0.19);
 }
 
-/* CKEDITOR5 CSS */
-.ck-editor__editable:not(.ck-editor__nested-editable) {
-  min-height: 30rem;
-  padding: 0.4rem 0.75rem !important;
-  overflow: auto !important;
-}
-
-.ck.ck-toolbar {
-  background-color: #fafafa !important;
-}
-
-.ck {
-  letter-spacing: 0.005rem;
-}
-
-.ck h2,
-h3,
-h4 {
-  font-weight: 700;
-  margin-top: 0.5rem !important;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e2e4e7;
-}
-
-.ck h2 {
-  line-height: 1.25;
-  font-size: 2em;
-  padding-bottom: 0.3em;
-}
-
-.ck h3 {
-  font-size: 1.5em;
-  padding-bottom: 0.5rem;
-}
-
-.ck h4 {
-  font-size: 1.25em;
-  padding-bottom: 0.375rem;
-}
-
-.ck ul {
-  margin-left: 1rem;
-}
-
-.ck blockquote {
-  font-style: normal !important;
-  padding: 1rem 1.75rem !important;
-  border-left: 0.25rem solid #2fc27b !important;
-  background-color: #fafcfe;
-}
-
 /* uiw markdown(Editor) CSS */
 .md-editor {
   margin: 0.25rem;
@@ -121,10 +70,14 @@ h4 {
   background-color: #fafcfe;
 }
 
-.markdown-preview img {
-  display: block !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+/* Normal CSS */
+.lecture-info-box-shadow {
+  box-shadow: 4px 12px 30px 6px rgba(0, 0, 0, 0.09);
+}
+
+.lecture-info-box-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 4px 12px 30px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* --------------- */
