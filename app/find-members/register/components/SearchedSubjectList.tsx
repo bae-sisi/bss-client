@@ -43,7 +43,7 @@ export default function SearchedSubjectList({
           {[...Array(13)].map((_, index) => (
             <SearchedSubjectListItem
               key={index}
-              isSelected={selectedRowIndex === index}
+              isSubjectSelected={selectedRowIndex === index}
               onClick={() => handleRowClick(index)}
             />
           ))}

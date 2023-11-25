@@ -95,13 +95,15 @@ export default function Login() {
     if (userAccountInfo.id === '111') {
       const userInfo = {
         username: '관리자',
+        email: 'admin@naver.com',
         uid: userAccountInfo.id,
         isAdmin: true,
       };
       dispatch(signIn(userInfo));
     } else if (userAccountInfo.id === '222') {
       const userInfo = {
-        username: '테스트',
+        username: '홍길동',
+        email: 'gildong123@naver.com',
         uid: userAccountInfo.id,
         isAdmin: false,
       };

@@ -15,6 +15,8 @@ export default function Register() {
     useState(false);
   const [username, setUsername] = useState('');
   const [isUsernameValidFail, setIsUsernameValidFail] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isEmailValidFail, setIsEmailValidFail] = useState(false);
   const [openPrivacyPolicyModal, setOpenPrivacyPolicyModal] = useState<
     string | undefined
   >();
@@ -41,6 +43,11 @@ export default function Register() {
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
     setIsUsernameValidFail(false);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setIsEmailValidFail(false);
   };
 
   const handleFormSubmit = (e: FormEvent) => {
@@ -102,7 +109,7 @@ export default function Register() {
               value={studentId}
               onChange={handleStudentIdChange}
               className={`bg-[#f9fafb] rounded-lg border-1 border-${
-                isStudentIdValidFail ? 'red-500' : '[#cfd0d2]'
+                isStudentIdValidFail ? 'red-500' : '[#9ba3af]'
               } w-full`}
             />
           </div>
@@ -120,7 +127,7 @@ export default function Register() {
               value={password}
               onChange={handlePasswordChange}
               className={`bg-[#f9fafb] rounded-lg border-1 border-${
-                isPasswordValidFail ? 'red-500' : '[#cfd0d2]'
+                isPasswordValidFail ? 'red-500' : '[#9ba3af]'
               } w-full`}
             />
           </div>
@@ -138,7 +145,7 @@ export default function Register() {
               value={repeatPassword}
               onChange={handleRepeatPasswordChange}
               className={`bg-[#f9fafb] rounded-lg border-1 border-${
-                isRepeatPasswordValidFail ? 'red-500' : '[#cfd0d2]'
+                isRepeatPasswordValidFail ? 'red-500' : '[#9ba3af]'
               } w-full`}
             />
           </div>
@@ -156,7 +163,25 @@ export default function Register() {
               value={username}
               onChange={handleUsernameChange}
               className={`bg-[#f9fafb] rounded-lg border-1 border-${
-                isUsernameValidFail ? 'red-500' : '[#cfd0d2]'
+                isUsernameValidFail ? 'red-500' : '[#9ba3af]'
+              } w-full`}
+            />
+          </div>
+          <div>
+            <div className='mb-2 block'>
+              <Label
+                htmlFor='email'
+                value='이메일'
+                className={`after:content-['*'] after:text-red-500 after:ml-[0.05rem]`}
+              />
+            </div>
+            <input
+              required
+              type='email'
+              value={email}
+              onChange={handleEmailChange}
+              className={`bg-[#f9fafb] rounded-lg border-1 border-${
+                isEmailValidFail ? 'red-500' : '[#9ba3af]'
               } w-full`}
             />
           </div>
@@ -165,8 +190,7 @@ export default function Register() {
               type='checkbox'
               className='rounded-[0.2rem] text-sm'
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => null}
             />
             <button className='text-cyan-600 hover:underline dark:text-cyan-500 ml-2'>
               <span onClick={() => setOpenPrivacyPolicyModal('default')}>

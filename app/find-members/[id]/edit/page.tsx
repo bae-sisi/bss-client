@@ -231,7 +231,7 @@ export default function EditFindMemeber() {
         </div>
 
         <div className='mt-8 pb-2 justify-end gap-3'>
-          <p>모집 기간</p>
+          <p>모집 종료 기간</p>
           <div className='flex gap-5 items-center mt-2'>
             <input
               type='datetime-local'
@@ -242,17 +242,6 @@ export default function EditFindMemeber() {
                 .slice(0, 16)}
               className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
               onChange={handleFindMemberStartDateChange}
-            />
-            <span>~</span>
-            <input
-              type='datetime-local'
-              id='end-date'
-              name='end-date'
-              value={selectedFindMemberDateTime.endDate
-                .toISOString()
-                .slice(0, 16)}
-              className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
-              onChange={handleFindMemberEndDateChange}
             />
           </div>
 

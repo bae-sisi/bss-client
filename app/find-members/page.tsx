@@ -18,7 +18,14 @@ export default function FindMemebers() {
   return isFindMembersReady ? (
     <div className='mt-2 px-5 2lg:px-0 overflow-x-auto'>
       <div className='flex flex-col w-[60rem] mx-auto'>
-        <p className='text-2xl font-semibold'>🙋🏻‍♀️ 팀원모집 목록</p>
+        <p className='flex items-center gap-3'>
+          <img
+            src='/images/icons/group.png'
+            alt='logo'
+            style={{ width: '47.5px' }}
+          />
+          <span className='text-2xl font-semibold'>팀원모집 목록</span>
+        </p>
         <div className='mt-5 mb-4'>
           <div className='flex'>
             <div className='flex flex-col relative z-0 w-1/2 group'>

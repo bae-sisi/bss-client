@@ -23,9 +23,10 @@ export default function RegisterFindMemeber() {
   const profName = useAppSelector(
     (state) => state.selectSubject.value.profName
   );
-  const isSelected = useAppSelector(
-    (state) => state.selectSubject.value.isSelected
+  const isSubjectSelected = useAppSelector(
+    (state) => state.selectSubject.value.isSubjectSelected
   );
+  const [selectedReqPosition, setSelectedReqPosition] = useState<string[]>([]);
 
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [title, setTitle] = useState('');
@@ -61,8 +62,8 @@ export default function RegisterFindMemeber() {
   }, [dispatch, isAuth, router]);
 
   useEffect(() => {
-    if (isSelected) setIsSubjectInfoValidFail(false);
-  }, [isSelected]);
+    if (isSubjectSelected) setIsSubjectInfoValidFail(false);
+  }, [isSubjectSelected]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -91,6 +92,16 @@ export default function RegisterFindMemeber() {
     }));
   };
 
+  const handleReqPositionClick = (value: string) => {
+    setSelectedReqPosition((prevSelected) => {
+      if (prevSelected.includes(value)) {
+        return prevSelected.filter((pos) => pos !== value);
+      } else {
+        return [...prevSelected, value];
+      }
+    });
+  };
+
   const handleCancelFindMemberRegister = () => {
     let userResponse = confirm('팀원모집 게시글 등록을 취소하시겠습니까?');
     if (!userResponse) return;
@@ -107,7 +118,7 @@ export default function RegisterFindMemeber() {
       return;
     }
 
-    if (!isSelected) {
+    if (!isSubjectSelected) {
       alert('교과목을 선택해 주세요');
       window.scrollTo(0, 0);
       setIsSubjectInfoValidFail(true);
@@ -224,8 +235,33 @@ export default function RegisterFindMemeber() {
           />
         </div>
 
+        <div className='mt-8 flex flex-col gap-1'>
+          <div className='ml-1 block'>
+            <Label
+              htmlFor='subjectClass'
+              value='모집할 개발 포지션'
+              className='text-base'
+            />
+          </div>
+          <div className='flex gap-1'>
+            {['Frontend', 'Backend', 'DevOps'].map((value) => (
+              <button
+                key={value}
+                className={`${
+                  selectedReqPosition.includes(value)
+                    ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
+                    : 'border border-[#9ba3af]'
+                }  px-4 h-8 rounded-md w-[6rem]`}
+                onClick={() => handleReqPositionClick(value)}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className='mt-8 pb-2 justify-end gap-3'>
-          <p>모집 기간</p>
+          <p>모집 종료 기간</p>
           <div className='flex gap-5 items-center mt-2'>
             <input
               type='datetime-local'
@@ -236,17 +272,6 @@ export default function RegisterFindMemeber() {
                 .slice(0, 16)}
               className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
               onChange={handleFindMemberStartDateChange}
-            />
-            <span>~</span>
-            <input
-              type='datetime-local'
-              id='end-date'
-              name='end-date'
-              value={selectedFindMemberDateTime.endDate
-                .toISOString()
-                .slice(0, 16)}
-              className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
-              onChange={handleFindMemberEndDateChange}
             />
           </div>
 
