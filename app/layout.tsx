@@ -1,5 +1,6 @@
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
+import ScrollToBottomTop from './components/ScrollToTopButton';
 import './globals.css';
 import ReduxProvider from './redux/provider';
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ReduxProvider>
           <Navbar />
           <main className='w-full mx-auto pt-20 mb-14'>{children}</main>
+          <ScrollToBottomTop />
           <Footer />
         </ReduxProvider>
       </body>
