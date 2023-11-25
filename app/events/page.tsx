@@ -1,19 +1,37 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import EventList from './components/EventList';
+import { useAppSelector } from '../redux/store';
+import Loading from '../loading';
 
 export default function Events() {
-  return (
+  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
+
+  const [isEventsReady, setIsEventsReady] = useState(false);
+
+  useEffect(() => {
+    setIsEventsReady(true);
+  }, []);
+
+  return isEventsReady ? (
     <div className='mt-2 px-5 2lg:px-0 overflow-x-auto'>
       <div className='flex flex-col w-[60rem] mx-auto'>
-        <p className='text-2xl font-semibold'>🎉 행사 목록</p>
-        <form className='mt-5 mb-4'>
+        <p className='flex items-center gap-3'>
+          <img
+            src='/images/icons/notice.png'
+            alt='logo'
+            style={{ width: '47.5px' }}
+          />
+          <span className='text-2xl font-semibold'>행사 목록</span>
+        </p>
+        <div className='mt-5 mb-4'>
           <div className='flex'>
             <div className='flex flex-col relative z-0 w-1/2 group'>
               <input
                 type='text'
                 name='floating_first_name'
-                id='floating_first_name'
                 className='block pl-7 pt-3 pb-[0.175rem] pr-0 w-full font-normal text-gray-900 bg-transparent border-0 border-b border-gray-400 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
                 placeholder=' '
                 required
@@ -40,20 +58,22 @@ export default function Events() {
                 제목, 작성자로 검색
               </p>
             </div>
-            <div className='relative ml-auto mt-auto bottom-[-0.75rem]'>
-              <div className='flex justify-end mb-2'>
-                <div className='flex'>
-                  <Link
-                    href='events/register'
-                    className=' text-white bg-[#3870e0] px-4 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#3464c2] hover:bg-[#3464c2] box-shadow'
-                  >
-                    등록하기
-                  </Link>
+            {isAuth ? (
+              <div className='relative ml-auto mt-auto bottom-[-0.75rem]'>
+                <div className='flex justify-end mb-2'>
+                  <div className='flex'>
+                    <Link
+                      href='events/register'
+                      className=' text-white bg-[#3870e0] px-4 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#3464c2] hover:bg-[#3464c2] box-shadow'
+                    >
+                      등록하기
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
           </div>
-        </form>
+        </div>
 
         <section className='dark:bg-gray-900'>
           <div className='mx-auto w-full'>
@@ -179,5 +199,7 @@ export default function Events() {
         </section>
       </div>
     </div>
+  ) : (
+    <Loading />
   );
 }

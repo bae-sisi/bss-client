@@ -1,6 +1,7 @@
 'use client';
 
 import Loading from '@/app/loading';
+import { useAppSelector } from '@/app/redux/store';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -11,23 +12,31 @@ const MarkdownPreview = dynamic(
 );
 
 export default function EventDetail() {
-  const [isExamPostReady, setIsExamPostReady] = useState(false);
+  const [isEventPostReady, setIsEventPostReady] = useState(false);
   const [isMarkdownPreviewReady, setIsMarkdownPreviewReady] = useState(false);
+
+  const uid = useAppSelector((state) => state.authReducer.value.uid);
+  const isAdmin = useAppSelector((state) => state.authReducer.value.isAdmin);
+
   const router = useRouter();
 
-  const handleDeleteExam = () => {
-    let userResponse = confirm('현재 행사 게시글을 삭제하시겠습니까?');
+  const handleDeleteEventPost = () => {
+    let userResponse = confirm('게시글을 삭제하시겠습니까?');
     if (!userResponse) return;
-    alert('게시글을 삭제하였습니다.');
+    alert('게시글을 삭제하였습니다');
     router.push('/events');
+  };
+
+  const handleEditEventPost = () => {
+    router.push(`/events/${'645f82d1dfc11e0020d07253'}/edit`);
   };
 
   useEffect(() => {
     setIsMarkdownPreviewReady(true);
-    setIsExamPostReady(true);
+    setIsEventPostReady(true);
   }, []);
 
-  return isExamPostReady && isMarkdownPreviewReady ? (
+  return isEventPostReady && isMarkdownPreviewReady ? (
     <div className='mt-6 mb-24 px-5 2lg:px-0 overflow-x-auto'>
       <div className='flex flex-col w-[60rem] mx-auto'>
         <div className='flex flex-col'>
@@ -100,25 +109,29 @@ _자세한 일정이 확정되면 추후 공지 예정_
               `}
             />
           </div>
-          <div>
+
+          {uid === '222' || isAdmin ? (
             <div className='flex gap-3 justify-end'>
-              <button
-                onClick={() => alert('개발 예정')}
-                className='flex gap-[0.375rem] items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  height='20'
-                  viewBox='0 -960 960 960'
-                  width='20'
-                  fill='white'
+              {uid === '222' ? (
+                <button
+                  onClick={handleEditEventPost}
+                  className='flex gap-[0.375rem] items-center text-white bg-[#eba338] px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#dc9429] hover:bg-[#dc9429] box-shadow'
                 >
-                  <path d='M794-666 666-794l42-42q17-17 42.5-16.5T793-835l43 43q17 17 17 42t-17 42l-42 42Zm-42 42L248-120H120v-128l504-504 128 128Z' />
-                </svg>
-                게시글 수정
-              </button>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    height='20'
+                    viewBox='0 -960 960 960'
+                    width='20'
+                    fill='white'
+                  >
+                    <path d='M794-666 666-794l42-42q17-17 42.5-16.5T793-835l43 43q17 17 17 42t-17 42l-42 42Zm-42 42L248-120H120v-128l504-504 128 128Z' />
+                  </svg>
+                  게시글 수정
+                </button>
+              ) : null}
+
               <button
-                onClick={handleDeleteExam}
+                onClick={handleDeleteEventPost}
                 className='flex gap-[0.375rem] items-center text-white bg-red-500 px-2 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#e14343] hover:bg-[#e14343] box-shadow'
               >
                 <svg
@@ -133,7 +146,7 @@ _자세한 일정이 확정되면 추후 공지 예정_
                 게시글 삭제
               </button>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>
