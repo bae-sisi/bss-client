@@ -33,7 +33,7 @@ export default function Navbar() {
               <img
                 src='/images/logo.png'
                 alt='logo'
-                style={{ width: '45px' }}
+                style={{ width: '35px', marginBottom: '2.5px' }}
               />
               <span className='hidden 2lg:block tracking-tight text-lg font-semibold'>
                 BaeSisi
@@ -44,10 +44,10 @@ export default function Navbar() {
         <div className='hidden ml-16 2md:block'>
           <div className='flex gap-3 font-medium mx-auto'>
             <Link
-              href='/lecture-review'
+              href='/lectures'
               className='px-4 py-2 rounded-md hover:bg-[#f3f4f5] focus:bg-[#f3f4f5]'
             >
-              강의평
+              강의정보
             </Link>
             <Link
               href='/prof-infos'
@@ -182,14 +182,14 @@ export default function Navbar() {
                 )}
               </div>
               <Link
-                href='/lecture-review'
+                href='/lectures'
                 onClick={(e) => {
                   e.stopPropagation();
                   setRightPos('-right-full');
                 }}
                 className='hover:bg-gray-200 focus:bg-grey-200 py-4 px-6 w-full font-medium'
               >
-                강의평
+                강의정보
               </Link>
               <Link
                 href='/prof-infos'
