@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserInfo {
   username: string;
+  email: string;
   uid: string;
   isAdmin: boolean;
 }
@@ -18,6 +19,7 @@ const initialState = {
   value: {
     isAuth: false,
     username: '',
+    email: '',
     uid: '',
     isAdmin: false,
   } as AuthState,
@@ -32,6 +34,7 @@ export const auth = createSlice({
         value: {
           isAuth: true,
           username: action.payload.username,
+          email: action.payload.email,
           uid: action.payload.uid,
           isAdmin: action.payload.isAdmin,
         },
