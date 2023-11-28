@@ -4,7 +4,7 @@ interface UserInfo {
   username: string;
   email: string;
   uid: string;
-  isAdmin: boolean;
+  role: string;
 }
 
 type AuthState = UserInfo & {
@@ -21,7 +21,7 @@ const initialState = {
     username: '',
     email: '',
     uid: '',
-    isAdmin: false,
+    role: '',
   } as AuthState,
 } as initialState;
 
@@ -36,7 +36,7 @@ export const auth = createSlice({
           username: action.payload.username,
           email: action.payload.email,
           uid: action.payload.uid,
-          isAdmin: action.payload.isAdmin,
+          role: action.payload.role,
         },
       };
     },
