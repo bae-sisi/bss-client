@@ -16,7 +16,7 @@ export default function EventDetail() {
   const [isMarkdownPreviewReady, setIsMarkdownPreviewReady] = useState(false);
 
   const uid = useAppSelector((state) => state.authReducer.value.uid);
-  const isAdmin = useAppSelector((state) => state.authReducer.value.isAdmin);
+  const role = useAppSelector((state) => state.authReducer.value.role);
 
   const router = useRouter();
 
@@ -110,7 +110,7 @@ _자세한 일정이 확정되면 추후 공지 예정_
             />
           </div>
 
-          {uid === '222' || isAdmin ? (
+          {uid === '222' || role === 'ADMIN' ? (
             <div className='flex gap-3 justify-end'>
               {uid === '222' ? (
                 <button
