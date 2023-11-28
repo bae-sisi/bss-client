@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
 import { useRouter } from 'next/navigation';
 import { Label } from 'flowbite-react';
@@ -50,7 +50,7 @@ export default function Register() {
     setIsEmailValidFail(false);
   };
 
-  const handleFormSubmit = (e: FormEvent) => {
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!studentId) {
@@ -84,8 +84,29 @@ export default function Register() {
       return;
     }
 
-    alert('회원가입이 완료되었습니다. 로그인을 진행해 주세요');
-    router.push('/login');
+    try {
+      const res = await fetch(
+        `/api/register?sid=${studentId}&username=${username}&password=${password}&email=${email}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      switch (res.status) {
+        case 201:
+          alert('회원가입이 완료되었습니다. 로그인을 진행해 주세요');
+          router.push('/login');
+          break;
+        case 400:
+          alert('입력된 학번의 사용자가 이미 존재합니다');
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return (

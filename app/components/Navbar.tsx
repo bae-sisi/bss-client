@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { signOut } from '../redux/features/authSlice';
+import { auth, signIn, signOut } from '../redux/features/authSlice';
 import { useRouter } from 'next/navigation';
 import { AppDispatch, useAppSelector } from '../redux/store';
 
@@ -17,10 +17,57 @@ export default function Navbar() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch(`/api/logout`, {
+        method: 'GET',
+      });
+
+      const data = await res.json();
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
+
     router.push('/');
     dispatch(signOut());
   };
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await fetch(`/api/auth/currentuser`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await res.json();
+        const authority = data.Authorities;
+
+        switch (authority) {
+          case 'USER':
+            const userInfo = {
+              username: data.username,
+              email: data.email,
+              uid: data.sid,
+              role: data.role,
+            };
+
+            dispatch(signIn(userInfo));
+            break;
+          default:
+            dispatch(signOut());
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        throw err;
+      }
+    };
+
+    fetchCurrentUser();
+  }, [dispatch]);
 
   return (
     <nav

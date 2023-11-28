@@ -16,7 +16,7 @@ export default function FindMemeberDetail() {
   const [isMarkdownPreviewReady, setIsMarkdownPreviewReady] = useState(false);
 
   const uid = useAppSelector((state) => state.authReducer.value.uid);
-  const isAdmin = useAppSelector((state) => state.authReducer.value.isAdmin);
+  const role = useAppSelector((state) => state.authReducer.value.role);
 
   const router = useRouter();
 
@@ -120,7 +120,7 @@ export default function FindMemeberDetail() {
                 gildong123@naver.com
               </a>
             </div>
-            {uid === '222' || isAdmin ? (
+            {uid === '222' || role === 'ADMIN' ? (
               <>
                 {uid === '222' ? (
                   <button
