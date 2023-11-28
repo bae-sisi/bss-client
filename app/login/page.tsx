@@ -49,7 +49,7 @@ export default function Login() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSignIn = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIdInputAnnouceMsg('');
     setPwdInputAnnouceMsg('');
@@ -74,40 +74,87 @@ export default function Login() {
       return;
     }
 
-    if (userAccountInfo.id !== '111' && userAccountInfo.id !== '222') {
-      idInputRef.current?.focus();
-      setIdInputAnnouceMsg('등록되지 않은 사용자입니다.');
-      setIdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
-      setIdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
-      return;
-    }
+    // if (userAccountInfo.id !== '111' && userAccountInfo.id !== '222') {
+    //   idInputRef.current?.focus();
+    //   setIdInputAnnouceMsg('등록되지 않은 사용자입니다.');
+    //   setIdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
+    //   setIdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
+    //   return;
+    // }
 
-    if (userAccountInfo.pwd !== 'asd!') {
-      pwdInputRef.current?.focus();
-      setPwdInputAnnouceMsg('잘못된 비밀번호입니다.');
-      setPwdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
-      setPwdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
-      return;
-    }
+    // if (userAccountInfo.pwd !== 'asd!') {
+    //   pwdInputRef.current?.focus();
+    //   setPwdInputAnnouceMsg('잘못된 비밀번호입니다.');
+    //   setPwdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
+    //   setPwdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
+    //   return;
+    // }
 
-    router.push('/');
+    // if (userAccountInfo.id === '111') {
+    //   const userInfo = {
+    //     username: '관리자',
+    //     email: 'admin@naver.com',
+    //     uid: userAccountInfo.id,
+    //     role: 'ADMIN',
+    //   };
+    //   dispatch(signIn(userInfo));
+    // } else if (userAccountInfo.id === '222') {
+    //   const userInfo = {
+    //     username: '홍길동',
+    //     email: 'gildong123@naver.com',
+    //     uid: userAccountInfo.id,
+    //     role: 'USER',
+    //   };
+    //   dispatch(signIn(userInfo));
+    // }
 
-    if (userAccountInfo.id === '111') {
-      const userInfo = {
-        username: '관리자',
-        email: 'admin@naver.com',
-        uid: userAccountInfo.id,
-        isAdmin: true,
-      };
-      dispatch(signIn(userInfo));
-    } else if (userAccountInfo.id === '222') {
-      const userInfo = {
-        username: '홍길동',
-        email: 'gildong123@naver.com',
-        uid: userAccountInfo.id,
-        isAdmin: false,
-      };
-      dispatch(signIn(userInfo));
+    try {
+      const res = await fetch(`/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sid: userAccountInfo.id,
+          password: userAccountInfo.pwd,
+        }),
+      });
+
+      switch (res.status) {
+        case 200:
+          const res = await fetch(`/api/auth/currentuser`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const data = await res.json();
+          const userInfo = {
+            username: data.username,
+            email: data.email,
+            uid: data.sid,
+            role: data.role,
+          };
+          dispatch(signIn(userInfo));
+
+          router.push('/');
+          break;
+        case 400:
+          idInputRef.current?.focus();
+          setIdInputAnnouceMsg(
+            '아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해 주세요'
+          );
+          setIdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
+          setIdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
+          return;
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
     }
   };
 
