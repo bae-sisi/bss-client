@@ -6,104 +6,145 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Label } from 'flowbite-react';
 import SubjectSearch from '../../register/components/SubjectSearch';
-import { useAppSelector } from '@/app/redux/store';
+import { AppDispatch, useAppSelector } from '@/app/redux/store';
+import { UserInfo, fetchCurrentUser } from '@/app/utils/fetchCurrentUser';
+import { useDispatch } from 'react-redux';
+interface DefaultProps {
+  params: {
+    id: string;
+  };
+}
 
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
   { ssr: false }
 );
 
-export default function EditFindMemeber() {
-  const findMemberPostInfo = {
-    title: '데이터베이스시스템 팀 프로젝트 팀원 모집',
-    subjectName: '데이터베이스시스템',
-    profName: '아지즈',
-    content: `안녕하세요! "데이터베이스시스템" 교과목에서 팀 프로젝트를 진행하게 되었는데, 열정 있는 팀원 1명을 모집하려고 합니다.
+export default function EditFindMemeber(props: DefaultProps) {
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
 
-## 📌 모집 조건
-
-- 데이터베이스에 관심이 많은 분
-- 팀워크를 중요시하는 분
-- 정해진 기한 안에 업무를 완료할 수 있는 분
-
-## 📆 모집 기간
-
-- **모집 시작**: ASAP
-- **모집 마감**: [마감일자 입력]
-
-## 📝 연락 방법
-
-- **이메일**: [이메일 주소 입력]
-- **디스코드**: [디스코드 닉네임 및 번호 입력]`,
-    selectedFindMemberDateTime: {
-      startDate: '2023-06-25',
-      endDate: '2023-06-28',
-    },
-  };
-
-  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
-  const uid = useAppSelector((state) => state.authReducer.value.uid);
-
-  const [isEditorReady, setIsEditorReady] = useState(false);
-  const [title, setTitle] = useState(findMemberPostInfo.title);
-  const [subjectName, setSubjectName] = useState(
-    findMemberPostInfo.subjectName
+  const lectureName = useAppSelector(
+    (state) => state.selectSubject.value.lectureName
   );
+  const profName = useAppSelector(
+    (state) => state.selectSubject.value.profName
+  );
+
+  const fid = props.params.id;
+
+  const [findMemberPostInfo, setFindMemberPostInfo] = useState({
+    sid: '',
+    fid: '',
+    title: '',
+    created_at: '',
+    end_date: '',
+    content: '',
+    author: '',
+    lecture_name: '',
+    prof_name: '',
+    author_email: '',
+    stack: 0,
+  });
+  const [isEditorReady, setIsEditorReady] = useState(false);
   const [isTitleValidFail, setIsTitleValidFail] = useState(false);
   const [isSubjectInfoValidFail, setIsSubjectInfoValidFail] = useState(false);
-  const [profName, setProfName] = useState(findMemberPostInfo.profName);
-  const [editorValue, setEditorValue] = useState(findMemberPostInfo.content);
-  const [selectedFindMemberDateTime, setSelectedFindMemberDateTime] = useState({
-    startDate: new Date(
-      findMemberPostInfo.selectedFindMemberDateTime.startDate
-    ),
-    endDate: new Date(findMemberPostInfo.selectedFindMemberDateTime.endDate),
-  });
 
   const titleRef = useRef<HTMLInputElement>(null);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   const router = useRouter();
 
+  // 각 포지션에 대한 비트 마스크 정의
+  const positionBitMask: { [key: string]: number } = {
+    Frontend: 8, // 1000 in binary
+    Backend: 4, // 0100 in binary
+    DevOps: 2, // 0010 in binary
+    기타: 1, // 0001 in binary
+  };
+
   useEffect(() => {
-    if (!isAuth) {
-      router.push('/login');
-      return;
-    }
+    fetchCurrentUser(dispatch).then((res) => {
+      if (res === false || !res.isAuth) {
+        location.href = '/login';
+        return;
+      }
+      fetchEventPost(res);
+    });
 
-    if (uid !== '222') {
-      alert('접근 권한이 없습니다');
-      router.back();
-      return;
-    }
+    const fetchEventPost = async (userInfo: UserInfo) => {
+      try {
+        const res = await fetch(`/api/get/one/fidmem?fid=${fid}`, {
+          method: 'GET',
+        });
+        const data = await res.json();
 
-    setIsEditorReady(true);
-  }, [isAuth, router, uid]);
+        setFindMemberPostInfo({
+          sid: data.sid,
+          fid: data.fid,
+          title: data.title,
+          created_at: data.created_at,
+          end_date: data.end_date,
+          content: data.content,
+          author: data.author,
+          lecture_name: data.lecture_name,
+          prof_name: data.prof_name,
+          author_email: data.author_email,
+          stack: data.stack,
+        });
+
+        // 변경 필요함 data.sid.toString() -> data.sid
+        if (userInfo.sid !== data.sid.toString()) {
+          alert('접근 권한이 없습니다');
+          router.back();
+          return;
+        }
+        setIsEditorReady(true);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        throw err;
+      }
+    };
+  }, [dispatch, fid, router, sid]);
+
+  useEffect(() => {
+    setFindMemberPostInfo((prevInfo) => ({
+      ...prevInfo,
+      prof_name: profName,
+      lecture_name: lectureName,
+    }));
+  }, [profName, lectureName]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    setFindMemberPostInfo({ ...findMemberPostInfo, title: e.target.value });
     setIsTitleValidFail(false);
   };
 
-  const handleEditorChange = useCallback((value?: string) => {
-    setEditorValue(value || '');
-  }, []);
-
-  const handleFindMemberStartDateChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSelectedFindMemberDateTime((prevState) => ({
-      ...prevState,
-      startDate: new Date(e.target.value),
-    }));
-  };
+  const handleEditorChange = useCallback(
+    (value?: string) => {
+      setFindMemberPostInfo({ ...findMemberPostInfo, content: value || '' });
+    },
+    [findMemberPostInfo]
+  );
 
   const handleFindMemberEndDateChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setSelectedFindMemberDateTime((prevState) => ({
-      ...prevState,
-      endDate: new Date(e.target.value),
-    }));
+    setFindMemberPostInfo({ ...findMemberPostInfo, end_date: e.target.value });
+  };
+
+  const handleReqPositionClick = (value: string) => {
+    setFindMemberPostInfo((prevInfo) => {
+      const newStack =
+        prevInfo.stack & positionBitMask[value]
+          ? prevInfo.stack & ~positionBitMask[value]
+          : prevInfo.stack | positionBitMask[value];
+
+      return {
+        ...prevInfo,
+        stack: newStack,
+      };
+    });
   };
 
   const handleCancelFindMemberEdit = () => {
@@ -113,8 +154,8 @@ export default function EditFindMemeber() {
     router.push('/find-members');
   };
 
-  const handleEditFindMemberPost = () => {
-    if (!title) {
+  const handleEditFindMemberPost = async () => {
+    if (!findMemberPostInfo.title) {
       alert('제목을 입력해 주세요');
       window.scrollTo(0, 0);
       titleRef.current?.focus();
@@ -122,14 +163,56 @@ export default function EditFindMemeber() {
       return;
     }
 
-    if (!editorValue) {
+    if (!findMemberPostInfo.content) {
       alert('본문을 입력해 주세요');
       window.scrollTo(0, 0);
       return;
     }
 
-    // 임시 게시글로 이동(작성 게시물로 이동해야 함)
-    router.push('/find-members/645f82d1dfc11e0020d07253');
+    if (!findMemberPostInfo.stack) {
+      alert('모집할 개발 포지션을 선택해 주세요');
+      window.scrollTo(0, document.body.scrollHeight);
+      return;
+    }
+
+    if (!findMemberPostInfo.end_date) {
+      alert('모집 종료 기간을 설정해 주세요');
+      window.scrollTo(0, document.body.scrollHeight);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/auth/update/fidmem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fid,
+          title: findMemberPostInfo.title,
+          content: findMemberPostInfo.content,
+          end_date: findMemberPostInfo.end_date,
+          prof_name: findMemberPostInfo.prof_name,
+          lecture_name: findMemberPostInfo.lecture_name,
+          stack: findMemberPostInfo.stack,
+        }),
+      });
+
+      switch (res.status) {
+        case 201:
+          // 수정된 게시물로 이동
+          router.push(`/find-members/${fid}`);
+          break;
+        case 400:
+          location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return isEditorReady ? (
@@ -149,7 +232,7 @@ export default function EditFindMemeber() {
               }-600 peer`}
               placeholder=' '
               required
-              value={title}
+              value={findMemberPostInfo.title}
               ref={titleRef}
               onChange={handleTitleChange}
             />
@@ -183,7 +266,7 @@ export default function EditFindMemeber() {
               <div className='flex items-center gap-3'>
                 <div className='m-1 block'>
                   <Label
-                    htmlFor='subjectName'
+                    htmlFor='lectureName'
                     value='교과목명'
                     className={`${
                       isSubjectInfoValidFail ? 'text-red-500' : ''
@@ -195,7 +278,7 @@ export default function EditFindMemeber() {
                     isSubjectInfoValidFail ? 'red-500' : '[#c7cbd2]'
                   } text-sm`}
                 >
-                  {subjectName}
+                  {findMemberPostInfo.lecture_name}
                 </span>
               </div>
               <div className='flex items-center gap-3'>
@@ -213,7 +296,7 @@ export default function EditFindMemeber() {
                     isSubjectInfoValidFail ? 'red-500' : '[#c7cbd2]'
                   } text-sm`}
                 >
-                  {profName}
+                  {findMemberPostInfo.prof_name}
                 </span>
               </div>
             </div>
@@ -223,11 +306,36 @@ export default function EditFindMemeber() {
         <div className='w-full mx-auto overflow-auto'>
           <MDEditor
             autoFocus
-            value={editorValue}
+            value={findMemberPostInfo.content}
             onChange={handleEditorChange}
             height={500}
             className='md-editor'
           />
+        </div>
+
+        <div className='mt-8 flex flex-col gap-1'>
+          <div className='ml-1 block'>
+            <Label
+              htmlFor='subjectClass'
+              value='모집할 개발 포지션'
+              className='text-base'
+            />
+          </div>
+          <div className='flex gap-1'>
+            {['Frontend', 'Backend', 'DevOps', '기타'].map((value) => (
+              <button
+                key={value}
+                className={`${
+                  findMemberPostInfo.stack & positionBitMask[value]
+                    ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
+                    : 'border border-[#9ba3af]'
+                } px-4 h-8 rounded-md w-[6rem]`}
+                onClick={() => handleReqPositionClick(value)}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className='mt-8 pb-2 justify-end gap-3'>
@@ -237,11 +345,10 @@ export default function EditFindMemeber() {
               type='datetime-local'
               id='start-date'
               name='start-date'
-              value={selectedFindMemberDateTime.startDate
-                .toISOString()
-                .slice(0, 16)}
+              // value={findMemberPostInfo.end_date.toISOString().slice(0, 16)}
+              value={findMemberPostInfo.end_date}
               className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
-              onChange={handleFindMemberStartDateChange}
+              onChange={handleFindMemberEndDateChange}
             />
           </div>
 

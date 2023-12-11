@@ -1,26 +1,37 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import LectureReviewListItem from './LectureReviewListItem';
 import NoneLectureReviewPostInfoListItem from './NoneLectureReviewPostInfoListItem';
 
-interface LectureReviewListProps {
-  id: string;
+export interface ReviewInfo {
+  cid: number;
+  content: string;
+  enrollSems: string;
+  progress_id: number;
+  rate: number;
+  recmndCnt: number;
+  user_id: string;
 }
 
-export default function LectureReviewList(props: LectureReviewListProps) {
-  const [isEventListReady, setIsEventListReady] = useState(false);
+interface LectureReviewListProps {
+  pid: string;
+  lectureReviewInfoList: ReviewInfo[];
+}
 
-  useEffect(() => {
-    setIsEventListReady(true);
-  }, []);
-
-  return isEventListReady ? (
-    <div>
-      <LectureReviewListItem id={props.id} />
-      <LectureReviewListItem id={props.id} />
+export default function LectureReviewList({
+  pid,
+  lectureReviewInfoList,
+}: LectureReviewListProps) {
+  return (
+    <div className='mt-4'>
+      {lectureReviewInfoList.length > 0 ? (
+        lectureReviewInfoList
+          .slice(0, 2)
+          .map((item, index) => (
+            <LectureReviewListItem key={index} id={pid} item={item} />
+          ))
+      ) : (
+        <NoneLectureReviewPostInfoListItem />
+      )}
     </div>
-  ) : (
-    <NoneLectureReviewPostInfoListItem />
   );
 }

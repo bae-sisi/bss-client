@@ -5,50 +5,73 @@ import React, { useState } from 'react';
 import ReviewStarsButtons from './ReviewStarsButtons';
 
 interface RegisterLectureReviewModalProps {
+  pid: string;
   openRegisterLectureReviewModal: string | undefined;
   setOpenRegisterLectureReviewModal: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
+  onReviewSubmitted: () => void;
 }
 
 export default function RegisterLectureReviewModal({
+  pid,
   openRegisterLectureReviewModal,
   setOpenRegisterLectureReviewModal,
+  onReviewSubmitted,
 }: RegisterLectureReviewModalProps) {
-  const [rating, setRating] = useState(0);
-  const [selectedAssignment, setSelectedAssignment] = useState('');
-  const [selectedGroupWork, setSelectedGroupWork] = useState('');
-  const [selectedGrading, setSelectedGrading] = useState('');
-  const [selectedAttendance, setSelectedAttendance] = useState('');
-  const [selectedExams, setSelectedExams] = useState('');
+  const [reviewInfo, setReviewInfo] = useState({
+    rating: 0,
+    content: '',
+    enrollSems: '',
+    progressId: pid,
+    assignmentFreq: 0,
+    groupFreq: 0,
+    grading: 0,
+    attending: 0,
+    examNum: 0,
+  });
 
-  const handleAssignmentClick = (value: string) => {
-    setSelectedAssignment(value);
-  };
-
-  const handleGroupWorkClick = (value: string) => {
-    setSelectedGroupWork(value);
-  };
-
-  const handleGradingClick = (value: string) => {
-    setSelectedGrading(value);
-  };
-
-  const handleAttendanceClick = (value: string) => {
-    setSelectedAttendance(value);
-  };
-
-  const handleExamsClick = (value: string) => {
-    setSelectedExams(value);
-  };
+  const assignmentFreqOption = ['많음', '보통', '없음'];
+  const groupFreqOption = ['많음', '보통', '없음'];
+  const gradingOption = ['너그러움', '보통', '깐깐함'];
+  const attendingOption = [
+    '복합적',
+    '직접호명',
+    '지정좌석',
+    '전자출결',
+    '반영안함',
+  ];
+  const examNumOption = ['네 번 이상', '세 번', '두 번', '한 번', '없음'];
 
   const handleRatingChange = (newRating: number) => {
-    setRating(newRating);
+    setReviewInfo({ ...reviewInfo, rating: newRating });
   };
 
-  const handleRegisterLectureReview = () => {
-    alert('강의평이 등록되었습니다');
-    setOpenRegisterLectureReviewModal(undefined);
+  const handleRegisterLectureReview = async () => {
+    try {
+      const res = await fetch(
+        `/api/auth/save/cmt?content=${reviewInfo.content}&enrollSems=${reviewInfo.enrollSems}&progress_id=${reviewInfo.progressId}&assignment_freq=${reviewInfo.assignmentFreq}&group_freq=${reviewInfo.groupFreq}&grading=${reviewInfo.grading}&attending=${reviewInfo.attending}&exam_num=${reviewInfo.examNum}&rate=${reviewInfo.rating}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      switch (res.status) {
+        case 201:
+          alert('강의평이 등록되었습니다');
+          setOpenRegisterLectureReviewModal(undefined);
+          onReviewSubmitted();
+          break;
+        case 400:
+          location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return (
@@ -67,7 +90,7 @@ export default function RegisterLectureReviewModal({
                 <ReviewStarsButtons onRatingChange={handleRatingChange} />
               </div>
               <div className='flex gap-[0.175rem] text-base mt-[0.125rem]'>
-                <span className='text-[#666]'>{rating}</span>
+                <span className='text-[#666]'>{reviewInfo.rating}</span>
                 <span className='text-[#666]'>/</span>
                 <span className='text-[#666]'>5</span>
               </div>
@@ -76,6 +99,9 @@ export default function RegisterLectureReviewModal({
               <textarea
                 className='w-full rounded-md min-h-[8rem]'
                 placeholder='이 강의에 대한 총평을 작성해 주세요'
+                onChange={(e) =>
+                  setReviewInfo({ ...reviewInfo, content: e.target.value })
+                }
               />
             </div>
 
@@ -91,11 +117,14 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <select
-                  name='subjectClass'
-                  //   value={subjectClassState}
-                  //   onChange={(e) => {
-                  //     setSubjectClassState(e.target.value);
-                  //   }}
+                  name='enrollSemester'
+                  value={reviewInfo.enrollSems}
+                  onChange={(e) => {
+                    setReviewInfo({
+                      ...reviewInfo,
+                      enrollSems: e.target.value,
+                    });
+                  }}
                   className='border w-fit py-0 h-[1.5rem] rounded-sm border-[#c7cbd2] text-sm'
                 >
                   <option value='all'>수강 학기 선택</option>
@@ -120,15 +149,22 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <div className='flex gap-1'>
-                  {['많음', '보통', '없음'].map((value) => (
+                  {assignmentFreqOption.map((value, index) => (
                     <button
                       key={value}
                       className={`${
-                        selectedAssignment === value
+                        assignmentFreqOption.length -
+                          reviewInfo.assignmentFreq ===
+                        index
                           ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
                           : 'border border-[#9ba3af]'
-                      }  px-4 h-8 rounded-md w-[3.75rem]`}
-                      onClick={() => handleAssignmentClick(value)}
+                      }  px-4 h-8 rounded-md w-[4rem]`}
+                      onClick={() =>
+                        setReviewInfo({
+                          ...reviewInfo,
+                          assignmentFreq: assignmentFreqOption.length - index,
+                        })
+                      }
                     >
                       {value}
                     </button>
@@ -145,15 +181,20 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <div className='flex gap-1'>
-                  {['많음', '보통', '없음'].map((value) => (
+                  {['많음', '보통', '없음'].map((value, index) => (
                     <button
                       key={value}
                       className={`${
-                        selectedGroupWork === value
+                        groupFreqOption.length - reviewInfo.groupFreq === index
                           ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
                           : 'border border-[#9ba3af]'
-                      }  px-4 h-8 rounded-md w-[3.75rem]`}
-                      onClick={() => handleGroupWorkClick(value)}
+                      }  px-4 h-8 rounded-md w-[4rem]`}
+                      onClick={() =>
+                        setReviewInfo({
+                          ...reviewInfo,
+                          groupFreq: groupFreqOption.length - index,
+                        })
+                      }
                     >
                       {value}
                     </button>
@@ -170,15 +211,20 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <div className='flex gap-1'>
-                  {['너그러움', '보통', '깐깐함'].map((value) => (
+                  {gradingOption.map((value, index) => (
                     <button
                       key={value}
                       className={`${
-                        selectedGrading === value
+                        gradingOption.length - reviewInfo.grading === index
                           ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
                           : 'border border-[#9ba3af]'
-                      }  px-4 h-8 rounded-md w-[5.25rem]`}
-                      onClick={() => handleGradingClick(value)}
+                      }  px-4 h-8 rounded-md w-[5.5rem]`}
+                      onClick={() =>
+                        setReviewInfo({
+                          ...reviewInfo,
+                          grading: gradingOption.length - index,
+                        })
+                      }
                     >
                       {value}
                     </button>
@@ -195,21 +241,20 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <div className='flex gap-1'>
-                  {[
-                    '복합적',
-                    '직접호명',
-                    '지정좌석',
-                    '전자출결',
-                    '반영안함',
-                  ].map((value) => (
+                  {attendingOption.map((value, index) => (
                     <button
                       key={value}
                       className={`${
-                        selectedAttendance === value
+                        attendingOption.length - reviewInfo.attending === index
                           ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
                           : 'border border-[#9ba3af]'
-                      }  px-4 h-8 rounded-md w-[5.25rem]`}
-                      onClick={() => handleAttendanceClick(value)}
+                      }  px-4 h-8 rounded-md w-[5.5rem]`}
+                      onClick={() =>
+                        setReviewInfo({
+                          ...reviewInfo,
+                          attending: attendingOption.length - index,
+                        })
+                      }
                     >
                       {value}
                     </button>
@@ -226,21 +271,24 @@ export default function RegisterLectureReviewModal({
                   />
                 </div>
                 <div className='flex gap-1'>
-                  {['네 번 이상', '세 번', '두 번', '한 번', '없음'].map(
-                    (value) => (
-                      <button
-                        key={value}
-                        className={`${
-                          selectedExams === value
-                            ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
-                            : 'border border-[#9ba3af]'
-                        }  px-4 h-8 rounded-md w-[5.75rem]`}
-                        onClick={() => handleExamsClick(value)}
-                      >
-                        {value}
-                      </button>
-                    )
-                  )}
+                  {examNumOption.map((value, index) => (
+                    <button
+                      key={value}
+                      className={`${
+                        examNumOption.length - reviewInfo.examNum === index
+                          ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
+                          : 'border border-[#9ba3af]'
+                      }  px-4 h-8 rounded-md w-[6rem]`}
+                      onClick={() =>
+                        setReviewInfo({
+                          ...reviewInfo,
+                          examNum: examNumOption.length - index,
+                        })
+                      }
+                    >
+                      {value}
+                    </button>
+                  ))}
                 </div>
               </div>
 

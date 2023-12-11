@@ -9,6 +9,7 @@ import { AppDispatch, useAppSelector } from '@/app/redux/store';
 import { useDispatch } from 'react-redux';
 import { initSubjectInfo } from '@/app/redux/features/selectSubjectSlice';
 import SubjectSearch from './components/SubjectSearch';
+import { fetchCurrentUser } from '@/app/utils/fetchCurrentUser';
 
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
@@ -16,9 +17,8 @@ const MDEditor = dynamic(
 );
 
 export default function RegisterFindMemeber() {
-  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
-  const subjectName = useAppSelector(
-    (state) => state.selectSubject.value.subjectName
+  const lectureName = useAppSelector(
+    (state) => state.selectSubject.value.lectureName
   );
   const profName = useAppSelector(
     (state) => state.selectSubject.value.profName
@@ -26,19 +26,22 @@ export default function RegisterFindMemeber() {
   const isSubjectSelected = useAppSelector(
     (state) => state.selectSubject.value.isSubjectSelected
   );
-  const [selectedReqPosition, setSelectedReqPosition] = useState<string[]>([]);
-
+  const [findMemberPostInfo, setFindMemberPostInfo] = useState({
+    sid: '',
+    fid: '',
+    title: '',
+    created_at: '',
+    end_date: '',
+    content: '',
+    author: '',
+    lecture_name: lectureName,
+    prof_name: profName,
+    author_email: '',
+    stack: 0,
+  });
   const [isEditorReady, setIsEditorReady] = useState(false);
-  const [title, setTitle] = useState('');
-  const [subjectNameState, setSubjectNameState] = useState('');
   const [isTitleValidFail, setIsTitleValidFail] = useState(false);
   const [isSubjectInfoValidFail, setIsSubjectInfoValidFail] = useState(false);
-  const [profNameState, setProfNameState] = useState('');
-  const [editorValue, setEditorValue] = useState('');
-  const [selectedFindMemberDateTime, setSelectedFindMemberDateTime] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
 
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -46,59 +49,72 @@ export default function RegisterFindMemeber() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    setSubjectNameState(subjectName);
-    setProfNameState(profName);
-  }, [subjectName, profName]);
+  // 각 포지션에 대한 비트 마스크 정의
+  const positionBitMask: { [key: string]: number } = {
+    Frontend: 8, // 1000 in binary
+    Backend: 4, // 0100 in binary
+    DevOps: 2, // 0010 in binary
+    기타: 1, // 0001 in binary
+  };
+
+  const currentDate = new Date();
+  // currentDate.setDate(currentDate.getDate() + 1);
+  const end_date_reqPosition = currentDate.toISOString().slice(0, 16);
+
+  console.log(end_date_reqPosition);
 
   useEffect(() => {
-    if (!isAuth) {
-      router.push('/login');
-      return;
-    }
+    fetchCurrentUser(dispatch).then((res) => {
+      if (res === false || !res.isAuth) {
+        location.href = '/login';
+        return;
+      }
+      setIsEditorReady(true);
+      dispatch(initSubjectInfo());
+    });
+  }, [dispatch, router]);
 
-    setIsEditorReady(true);
-    dispatch(initSubjectInfo());
-  }, [dispatch, isAuth, router]);
+  useEffect(() => {
+    setFindMemberPostInfo((prevInfo) => ({
+      ...prevInfo,
+      prof_name: profName,
+      lecture_name: lectureName,
+    }));
+  }, [profName, lectureName]);
 
   useEffect(() => {
     if (isSubjectSelected) setIsSubjectInfoValidFail(false);
   }, [isSubjectSelected]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    setFindMemberPostInfo({ ...findMemberPostInfo, title: e.target.value });
     setIsTitleValidFail(false);
   };
 
-  const handleEditorChange = useCallback((value?: string) => {
-    setEditorValue(value || '');
-  }, []);
-
-  const handleFindMemberStartDateChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSelectedFindMemberDateTime((prevState) => ({
-      ...prevState,
-      startDate: new Date(e.target.value),
-    }));
-  };
+  const handleEditorChange = useCallback(
+    (value?: string) => {
+      setFindMemberPostInfo({ ...findMemberPostInfo, content: value || '' });
+    },
+    [findMemberPostInfo]
+  );
 
   const handleFindMemberEndDateChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setSelectedFindMemberDateTime((prevState) => ({
-      ...prevState,
-      endDate: new Date(e.target.value),
-    }));
+    setFindMemberPostInfo({ ...findMemberPostInfo, end_date: e.target.value });
   };
 
   const handleReqPositionClick = (value: string) => {
-    setSelectedReqPosition((prevSelected) => {
-      if (prevSelected.includes(value)) {
-        return prevSelected.filter((pos) => pos !== value);
-      } else {
-        return [...prevSelected, value];
-      }
+    setFindMemberPostInfo((prevInfo) => {
+      const newStack =
+        prevInfo.stack & positionBitMask[value]
+          ? prevInfo.stack & ~positionBitMask[value]
+          : prevInfo.stack | positionBitMask[value];
+
+      return {
+        ...prevInfo,
+        stack: newStack,
+      };
     });
   };
 
@@ -109,8 +125,8 @@ export default function RegisterFindMemeber() {
     router.push('/find-members');
   };
 
-  const handleRegisterFindMemberPost = () => {
-    if (!title) {
+  const handleRegisterFindMemberPost = async () => {
+    if (!findMemberPostInfo.title) {
       alert('제목을 입력해 주세요');
       window.scrollTo(0, 0);
       titleRef.current?.focus();
@@ -125,14 +141,58 @@ export default function RegisterFindMemeber() {
       return;
     }
 
-    if (!editorValue) {
+    if (!findMemberPostInfo.content) {
       alert('본문을 입력해 주세요');
       window.scrollTo(0, 0);
       return;
     }
 
-    // 임시 게시글로 이동(작성 게시물로 이동해야 함)
-    router.push('/find-members/645f82d1dfc11e0020d07253');
+    if (!findMemberPostInfo.stack) {
+      alert('모집할 개발 포지션을 선택해 주세요');
+      window.scrollTo(0, document.body.scrollHeight);
+      return;
+    }
+
+    if (!findMemberPostInfo.end_date) {
+      alert('모집 종료 기간을 설정해 주세요');
+      window.scrollTo(0, document.body.scrollHeight);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/auth/save/fidmem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: findMemberPostInfo.title,
+          content: findMemberPostInfo.content,
+          end_date: findMemberPostInfo.end_date,
+          prof_name: findMemberPostInfo.prof_name,
+          lecture_name: findMemberPostInfo.lecture_name,
+          stack: findMemberPostInfo.stack,
+        }),
+      });
+
+      const data = await res.json();
+      const fid = data.fid;
+
+      switch (res.status) {
+        case 201:
+          // 작성한 게시물로 이동
+          router.push(`/find-members/${fid}`);
+          break;
+        case 400:
+          location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return isEditorReady ? (
@@ -152,7 +212,7 @@ export default function RegisterFindMemeber() {
               }-600 peer`}
               placeholder=' '
               required
-              value={title}
+              value={findMemberPostInfo.title}
               ref={titleRef}
               onChange={handleTitleChange}
             />
@@ -188,7 +248,7 @@ export default function RegisterFindMemeber() {
               <div className='flex items-center gap-3'>
                 <div className='m-1 block'>
                   <Label
-                    htmlFor='subjectName'
+                    htmlFor='lectureName'
                     value='교과목명'
                     className={`${
                       isSubjectInfoValidFail ? 'text-red-500' : ''
@@ -200,7 +260,7 @@ export default function RegisterFindMemeber() {
                     isSubjectInfoValidFail ? 'red-500' : '[#c7cbd2]'
                   } text-sm`}
                 >
-                  {subjectNameState}
+                  {findMemberPostInfo.lecture_name}
                 </span>
               </div>
               <div className='flex items-center gap-3'>
@@ -218,7 +278,7 @@ export default function RegisterFindMemeber() {
                     isSubjectInfoValidFail ? 'red-500' : '[#c7cbd2]'
                   } text-sm`}
                 >
-                  {profNameState}
+                  {findMemberPostInfo.prof_name}
                 </span>
               </div>
             </div>
@@ -228,7 +288,7 @@ export default function RegisterFindMemeber() {
         <div className='w-full mx-auto overflow-auto'>
           <MDEditor
             autoFocus
-            value={editorValue}
+            value={findMemberPostInfo.content}
             onChange={handleEditorChange}
             height={500}
             className='md-editor'
@@ -244,14 +304,14 @@ export default function RegisterFindMemeber() {
             />
           </div>
           <div className='flex gap-1'>
-            {['Frontend', 'Backend', 'DevOps'].map((value) => (
+            {['Frontend', 'Backend', 'DevOps', '기타'].map((value) => (
               <button
                 key={value}
                 className={`${
-                  selectedReqPosition.includes(value)
+                  findMemberPostInfo.stack & positionBitMask[value]
                     ? 'border-2 border-[#3870e0] text-[#3870e0] font-semibold shadow-md'
                     : 'border border-[#9ba3af]'
-                }  px-4 h-8 rounded-md w-[6rem]`}
+                } px-4 h-8 rounded-md w-[6rem]`}
                 onClick={() => handleReqPositionClick(value)}
               >
                 {value}
@@ -267,11 +327,10 @@ export default function RegisterFindMemeber() {
               type='datetime-local'
               id='start-date'
               name='start-date'
-              value={selectedFindMemberDateTime.startDate
-                .toISOString()
-                .slice(0, 16)}
+              min={end_date_reqPosition}
+              value={findMemberPostInfo.end_date.slice(0, 16)}
               className='text-sm appearance-none border rounded shadow py-[0.375rem] px-2 text-gray-500'
-              onChange={handleFindMemberStartDateChange}
+              onChange={handleFindMemberEndDateChange}
             />
           </div>
 

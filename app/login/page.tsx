@@ -74,40 +74,6 @@ export default function Login() {
       return;
     }
 
-    // if (userAccountInfo.id !== '111' && userAccountInfo.id !== '222') {
-    //   idInputRef.current?.focus();
-    //   setIdInputAnnouceMsg('등록되지 않은 사용자입니다.');
-    //   setIdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
-    //   setIdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
-    //   return;
-    // }
-
-    // if (userAccountInfo.pwd !== 'asd!') {
-    //   pwdInputRef.current?.focus();
-    //   setPwdInputAnnouceMsg('잘못된 비밀번호입니다.');
-    //   setPwdInputElementStyle(STR_WRONG_CASE_INPUT_ELEMENT_STYLE_CLASSNAME);
-    //   setPwdLabelElementStyle(STR_WRONG_CASE_LABEL_ELEMENT_STYLE_CLASSNAME);
-    //   return;
-    // }
-
-    // if (userAccountInfo.id === '111') {
-    //   const userInfo = {
-    //     username: '관리자',
-    //     email: 'admin@naver.com',
-    //     uid: userAccountInfo.id,
-    //     role: 'ADMIN',
-    //   };
-    //   dispatch(signIn(userInfo));
-    // } else if (userAccountInfo.id === '222') {
-    //   const userInfo = {
-    //     username: '홍길동',
-    //     email: 'gildong123@naver.com',
-    //     uid: userAccountInfo.id,
-    //     role: 'USER',
-    //   };
-    //   dispatch(signIn(userInfo));
-    // }
-
     try {
       const res = await fetch(`/api/login`, {
         method: 'POST',
@@ -133,7 +99,7 @@ export default function Login() {
           const userInfo = {
             username: data.username,
             email: data.email,
-            uid: data.sid,
+            sid: data.sid,
             role: data.role,
           };
           dispatch(signIn(userInfo));

@@ -95,7 +95,7 @@ export default function Register() {
       switch (res.status) {
         case 201:
           alert('회원가입이 완료되었습니다. 로그인을 진행해 주세요');
-          router.push('/login');
+          location.href = '/login';
           break;
         case 400:
           alert('입력된 학번의 사용자가 이미 존재합니다');

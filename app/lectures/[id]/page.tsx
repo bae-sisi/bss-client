@@ -1,12 +1,11 @@
 'use client';
 
 import Loading from '@/app/loading';
-import { useAppSelector } from '@/app/redux/store';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import ReviewStars from '../components/ReviewStars';
 import Link from 'next/link';
 import LectureReviewList from './components/LectureReviewList';
+import { useRouter } from 'next/navigation';
+import ReviewStars from '../components/ReviewStars';
 
 interface DefaultProps {
   params: {
@@ -15,22 +14,79 @@ interface DefaultProps {
 }
 
 export default function LectureInfoDetail(props: DefaultProps) {
+  const [progressInfo, setProgressInfo] = useState({
+    pid: 0,
+    grade: 0,
+    year: 0,
+    profName: '',
+    lectureName: '',
+    rate: 0,
+    assignmentFreq: '',
+    grading: '',
+    examNum: '',
+    groupFreq: '',
+    attending: '',
+  });
+  const [lectureReviewInfoList, setLectureReviewInfoList] = useState([]);
   const [isFindMemberPostReady, setIsFindMemberPostReady] = useState(false);
 
-  const uid = useAppSelector((state) => state.authReducer.value.uid);
+  const pid = props.params.id;
 
   const router = useRouter();
 
-  const handleDeleteFindMemberPost = () => {
-    let userResponse = confirm('게시글을 삭제하시겠습니까?');
-    if (!userResponse) return;
-    alert('게시글을 삭제하였습니다.');
-    router.push('/find-members');
-  };
-
   useEffect(() => {
-    setIsFindMemberPostReady(true);
-  }, []);
+    const fetchLecturInfoPost = async () => {
+      try {
+        const progressRes = await fetch(
+          `/api/get/one/progress?progress_id=${pid}`,
+          {
+            method: 'GET',
+          }
+        );
+        const progressData = await progressRes.json();
+
+        const evaluationRes = await fetch(
+          `/api/get/avg/evaluation?progress_id=${pid}`,
+          {
+            method: 'GET',
+          }
+        );
+        const evaluationData = await evaluationRes.json();
+
+        const lectureReviewInfoRes = await fetch(
+          `/api/get/all/cmt?progress_id=${pid}`,
+          {
+            method: 'GET',
+          }
+        );
+        const lectureReviewInfoResData = await lectureReviewInfoRes.json();
+
+        setProgressInfo({
+          pid: progressData.progressID,
+          grade: progressData.grade,
+          year: progressData.year,
+          profName: progressData.profName,
+          lectureName: progressData.lectureName,
+          rate: progressData.rate,
+          assignmentFreq: evaluationData.assignment_freq,
+          grading: evaluationData.grading,
+          examNum: evaluationData.exam_num,
+          groupFreq: evaluationData.group_freq,
+          attending: evaluationData.attending,
+        });
+
+        setLectureReviewInfoList(lectureReviewInfoResData);
+
+        setIsFindMemberPostReady(true);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        alert('존재하지 않는 게시물입니다');
+        router.push('/lectures');
+      }
+    };
+
+    fetchLecturInfoPost();
+  }, [pid, router]);
 
   return isFindMemberPostReady ? (
     <div className='mt-6 mb-24 px-5 2lg:px-0 overflow-x-auto'>
@@ -51,7 +107,7 @@ export default function LectureInfoDetail(props: DefaultProps) {
                 href='/'
                 className='flex items-center text-[#666] rounded-lg font-medium transition pl-3 py-[0.375rem] bg-[#eee] pr-1 hover:bg-[#dedede]'
               >
-                데이터베이스시스템
+                {progressInfo.lectureName}
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   height='24'
@@ -66,7 +122,7 @@ export default function LectureInfoDetail(props: DefaultProps) {
             <Link href='/' className='flex items-center p-1 mt-2'>
               <span className='font-bold mr-7'>교수명</span>
               <span className='flex items-center text-[#666] rounded-lg font-medium transition pl-3 py-[0.375rem] bg-[#eee] pr-1 hover:bg-[#dedede]'>
-                나스리디노프 아지즈
+                {progressInfo.profName}
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   height='24'
@@ -83,40 +139,78 @@ export default function LectureInfoDetail(props: DefaultProps) {
           <div className='flex items-center p-1 justify-between mr-14 mt-7'>
             <div className='flex flex-col gap-1'>
               <span className='font-bold'>과제</span>
-              <span className='text-[#666]'>보통</span>
+              <span className='text-[#666]'>
+                {progressInfo.assignmentFreq !== 'None' ? (
+                  <span>{progressInfo.assignmentFreq}</span>
+                ) : (
+                  <span className='text-gray-400'>정보없음</span>
+                )}
+              </span>
             </div>
             <div className='flex flex-col gap-1'>
               <span className='font-bold'>조모임</span>
-              <span className='text-[#666]'>많음</span>
+              <span className='text-[#666]'>
+                {progressInfo.groupFreq !== 'None' ? (
+                  <span>{progressInfo.groupFreq}</span>
+                ) : (
+                  <span className='text-gray-400'>정보없음</span>
+                )}
+              </span>
             </div>
             <div className='flex flex-col gap-1'>
               <span className='font-bold'>성적</span>
-              <span className='text-[#666]'>너그러움</span>
+              <span className='text-[#666]'>
+                {progressInfo.grading !== 'None' ? (
+                  <span>{progressInfo.grading}</span>
+                ) : (
+                  <span className='text-gray-400'>정보없음</span>
+                )}
+              </span>
             </div>
           </div>
           <div className='flex items-center p-1 mt-6'>
             <span className='font-bold mr-10'>출결</span>
-            <span className='mr-1 text-[#666]'>직접호명</span>
+            <span className='mr-1 text-[#666]'>
+              {progressInfo.attending !== 'None' ? (
+                <span>{progressInfo.attending}</span>
+              ) : (
+                <span className='text-gray-400'>정보없음</span>
+              )}
+            </span>
           </div>
           <div className='flex items-center p-1 mt-5'>
             <span className='font-bold mr-10'>시험</span>
-            <span className='mr-1 text-[#666]'>한 번</span>
+            <span className='mr-1 text-[#666]'>
+              {' '}
+              {progressInfo.attending !== 'None' ? (
+                <span>{progressInfo.examNum}</span>
+              ) : (
+                <span className='text-gray-400'>정보없음</span>
+              )}
+            </span>
           </div>
         </div>
 
         <div className='ml-9 w-1/2 rounded-xl transition duration-300 lecture-info-box-shadow mt-7 px-5 py-2 mb-10'>
           <div className='flex items-center p-1'>
             <div className='flex items-center p-1 gap-1 mt-3'>
-              <span className='text-2xl font-bold mr-2'>3.0</span>
+              <span className='text-2xl font-bold mr-2'>
+                {progressInfo.rate.toFixed(1)}
+              </span>
               <div className='scale-125 ml-4 mb-[0.175rem]'>
-                <ReviewStars />
+                <ReviewStars totalRate={progressInfo.rate} />
               </div>
-              <span className='text-sm ml-3 text-[#666]'>(3개)</span>
+              <span className='text-sm ml-3 text-[#666]'>
+                ({lectureReviewInfoList.length}개)
+              </span>
             </div>
           </div>
           <hr className='mt-3' />
           <div className='h-[13.5rem] items-center justify-between'>
-            <LectureReviewList id={props.params.id} />
+            <LectureReviewList
+              pid={props.params.id}
+              lectureReviewInfoList={lectureReviewInfoList}
+            />
           </div>
           <Link
             href={`${props.params.id}/reviews`}

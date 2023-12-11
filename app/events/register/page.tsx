@@ -1,10 +1,12 @@
 'use client';
 
 import Loading from '@/app/loading';
-import { useAppSelector } from '@/app/redux/store';
+import { AppDispatch, useAppSelector } from '@/app/redux/store';
+import { fetchCurrentUser } from '@/app/utils/fetchCurrentUser';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
@@ -12,8 +14,6 @@ const MDEditor = dynamic(
 );
 
 export default function RegisterEvent() {
-  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
-
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [title, setTitle] = useState('');
   const [isTitleValidFail, setIsTitleValidFail] = useState(false);
@@ -21,16 +21,19 @@ export default function RegisterEvent() {
 
   const titleRef = useRef<HTMLInputElement>(null);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuth) {
-      router.push('/login');
-      return;
-    }
-
-    setIsEditorReady(true);
-  }, [isAuth, router]);
+    fetchCurrentUser(dispatch).then((res) => {
+      if (res === false || !res.isAuth) {
+        location.href = '/login';
+        return;
+      }
+      setIsEditorReady(true);
+    });
+  }, [dispatch, router]);
 
   const handleEditorChange = useCallback((value?: string) => {
     setEditorValue(value || '');
@@ -48,7 +51,7 @@ export default function RegisterEvent() {
     router.push('/events');
   };
 
-  const handleRegisterEventPost = () => {
+  const handleRegisterEventPost = async () => {
     if (!title) {
       alert('제목을 입력해 주세요');
       window.scrollTo(0, 0);
@@ -63,8 +66,36 @@ export default function RegisterEvent() {
       return;
     }
 
-    // 임시 게시글로 이동(작성 게시물로 이동해야 함)
-    router.push('/events/645f82d1dfc11e0020d07253');
+    try {
+      const res = await fetch(`/api/auth/save/event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: title,
+          content: editorValue,
+        }),
+      });
+
+      const data = await res.json();
+      const eid = data.eid;
+
+      switch (res.status) {
+        case 201:
+          // 작성한 게시물로 이동
+          router.push(`/events/${eid}`);
+          break;
+        case 400:
+          location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return isEditorReady ? (

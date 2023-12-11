@@ -9,11 +9,16 @@ import Loading from '../loading';
 export default function Events() {
   const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [isEventsReady, setIsEventsReady] = useState(false);
 
   useEffect(() => {
     setIsEventsReady(true);
   }, []);
+
+  const handleSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return isEventsReady ? (
     <div className='mt-2 px-5 2lg:px-0 overflow-x-auto'>
@@ -35,6 +40,8 @@ export default function Events() {
                 className='block pl-7 pt-3 pb-[0.175rem] pr-0 w-full font-normal text-gray-900 bg-transparent border-0 border-b border-gray-400 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
                 placeholder=' '
                 required
+                value={searchQuery}
+                onChange={handleSearchQueryChange}
               />
               <div className='absolute pt-[0.9rem] left-[-0.9rem] flex items-center pl-3 pointer-events-none'>
                 <svg
@@ -96,11 +103,11 @@ export default function Events() {
                       </th>
                     </tr>
                   </thead>
-                  <EventList />
+                  <EventList searchQuery={searchQuery} />
                 </table>
               </div>
             </div>
-            <nav
+            {/* <nav
               className='flex flex-col md:flex-row text-xs justify-between items-start md:items-center space-y-3 md:space-y-0 pl-1 mt-3'
               aria-label='Table navigation'
             >
@@ -194,7 +201,7 @@ export default function Events() {
                   </a>
                 </li>
               </ul>
-            </nav>
+            </nav> */}
           </div>
         </section>
       </div>

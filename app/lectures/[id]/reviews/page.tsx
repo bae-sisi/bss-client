@@ -5,18 +5,73 @@ import { useEffect, useState } from 'react';
 import ReviewStars from '../../components/ReviewStars';
 import LectureReviewList from './components/LectureReviewList';
 import RegisterLectureReviewModal from './components/RegisterLectureReviewModal';
+import { useRouter } from 'next/navigation';
 
-export default function Reviews() {
-  const [isFindMemberPostReady, setIsFindMemberPostReady] = useState(false);
+interface DefaultProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function Reviews(props: DefaultProps) {
+  const [progressInfo, setProgressInfo] = useState({
+    pid: 0,
+    grade: 0,
+    year: 0,
+    profName: '',
+    lectureName: '',
+    rate: 0,
+  });
+  const [reviewInfoList, setReviewInfoList] = useState([]);
+  const [isReviewInfoListReady, setIsReviewInfoListReady] = useState(false);
 
   const [openRegisterLectureReviewModal, setOpenRegisterLectureReviewModal] =
     useState<string | undefined>();
 
+  const pid = props.params.id;
+
+  const router = useRouter();
+
+  const fetchReviewInfos = async () => {
+    try {
+      const progressRes = await fetch(
+        `/api/get/one/progress?progress_id=${pid}`,
+        {
+          method: 'GET',
+        }
+      );
+      const progressData = await progressRes.json();
+
+      const commentRes = await fetch(`/api/get/all/cmt?progress_id=${pid}`, {
+        method: 'GET',
+      });
+
+      setProgressInfo({
+        pid: progressData.progressID,
+        grade: progressData.grade,
+        year: progressData.year,
+        profName: progressData.profName,
+        lectureName: progressData.lectureName,
+        rate: progressData.rate,
+      });
+
+      const commentData = await commentRes.json();
+
+      setReviewInfoList(commentData);
+
+      setIsReviewInfoListReady(true);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('존재하지 않는 게시물입니다');
+      router.push('/lectures');
+    }
+  };
+
   useEffect(() => {
-    setIsFindMemberPostReady(true);
+    fetchReviewInfos();
   }, []);
 
-  return isFindMemberPostReady ? (
+  return isReviewInfoListReady ? (
     <div className='mt-6 mb-12 px-5 2lg:px-0 overflow-x-auto'>
       <div className='flex justify-between w-[50rem] mx-auto'>
         <div className='ml-9 w-full rounded-xl transition duration-300 lecture-info-box-shadow mt-7 px-5 py-2 mb-10'>
@@ -31,25 +86,29 @@ export default function Reviews() {
           <div className='flex items-center p-1'>
             <div className='flex justify-between items-center w-full '>
               <div className='flex items-center p-1 gap-1 mt-3'>
-                <span className='text-2xl font-bold mr-2'>3.0</span>
+                <span className='text-2xl font-bold mr-2'>
+                  {progressInfo.rate.toFixed(1)}
+                </span>
                 <div className='scale-125 ml-4 mb-[0.175rem]'>
-                  <ReviewStars />
+                  <ReviewStars totalRate={progressInfo.rate} />
                 </div>
-                <span className='text-sm ml-3 text-[#666]'>(3개)</span>
+                <span className='text-sm ml-3 text-[#666]'>
+                  ({reviewInfoList.length}개)
+                </span>
               </div>
               <div className='flex gap-2 mt-1'>
                 <span className='flex items-center text-[#666] rounded-lg font-medium transition px-3 py-[0.375rem] bg-[#eee] hover:bg-[#dedede]'>
-                  데이터베이스시스템
+                  {progressInfo.lectureName}
                 </span>
                 <span className='flex items-center text-[#666] rounded-lg font-medium transition px-3 py-[0.375rem] bg-[#eee] hover:bg-[#dedede]'>
-                  나스리디노프 아지즈
+                  {progressInfo.profName}
                 </span>
               </div>
             </div>
           </div>
           <hr className='mt-3' />
           <div className='h-[25rem] mt-4 overflow-y-scroll items-center justify-between'>
-            <LectureReviewList />
+            <LectureReviewList reviewInfoList={reviewInfoList} />
           </div>
           <button
             onClick={() => setOpenRegisterLectureReviewModal('default')}
@@ -69,10 +128,12 @@ export default function Reviews() {
 
           {openRegisterLectureReviewModal ? (
             <RegisterLectureReviewModal
+              pid={pid}
               openRegisterLectureReviewModal={openRegisterLectureReviewModal}
               setOpenRegisterLectureReviewModal={
                 setOpenRegisterLectureReviewModal
               }
+              onReviewSubmitted={fetchReviewInfos}
             />
           ) : null}
         </div>
