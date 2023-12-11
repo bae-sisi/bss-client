@@ -1,16 +1,29 @@
 'use client';
 
+import { formatDate } from '@/app/utils/formatDate';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-export default function EventListItem() {
+// eventPost 객체의 타입 정의
+interface EventPost {
+  eid: string;
+  title: string;
+  author: string;
+  created_at: string;
+}
+
+interface EventPostItemProps {
+  eventPost: EventPost;
+}
+
+export default function EventListItem({ eventPost }: EventPostItemProps) {
   const router = useRouter();
 
   return (
     <tr
       className='border-b dark:border-gray-700 text-xs text-center cursor-pointer hover:bg-gray-50 focus:bg-gray-50'
       onClick={() => {
-        router.push('events/645f82d1dfc11e0020d07253');
+        router.push(`/events/${eventPost.eid}`);
       }}
     >
       <th
@@ -18,15 +31,14 @@ export default function EventListItem() {
         className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
         style={{ textDecoration: 'none' }}
       >
-        1
+        {eventPost.eid}
       </th>
-      <td className='hover:underline focus:underline'>
-        2023학년도 졸업작품전시회(캡스톤디자인전시회)일정 및 작품소개서 제출
-        안내(~10/17)
-      </td>
-      <td className='font-medium'>홍길동</td>
+      <td className='hover:underline focus:underline'>{eventPost.title}</td>
+      <td className='font-medium'>{eventPost.author}</td>
       <td className='font-medium'>
-        <span className='text-red-500 '>2023.06.26</span>
+        <span className='text-red-500 '>
+          {formatDate(eventPost.created_at)}
+        </span>
       </td>
     </tr>
   );

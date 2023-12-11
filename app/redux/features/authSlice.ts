@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UserInfo {
   username: string;
   email: string;
-  uid: string;
+  sid: string;
   role: string;
 }
 
@@ -20,7 +20,7 @@ const initialState = {
     isAuth: false,
     username: '',
     email: '',
-    uid: '',
+    sid: '',
     role: '',
   } as AuthState,
 } as initialState;
@@ -35,7 +35,7 @@ export const auth = createSlice({
           isAuth: true,
           username: action.payload.username,
           email: action.payload.email,
-          uid: action.payload.uid,
+          sid: action.payload.sid,
           role: action.payload.role,
         },
       };

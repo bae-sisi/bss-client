@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import FindMember from './components/FindMember';
 import Event from './components/Event';
+import EventList from './components/EventList';
+import FindMemberList from './components/FindMemberList';
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className='mt-[-5rem]'>
       <div className="h-64 flex justify-center items-center bg-[url('/images/main_banner.jpg')] bg-cover bg-center">
@@ -24,18 +26,14 @@ export default function Home() {
             </div>
 
             <div className='flex flex-col gap-3'>
-              {/* 데이터 임시로 추가 */}
-              <Event />
-              <Event />
-              <Event />
-              <Event />
+              <EventList />
             </div>
           </div>
 
           <div className='w-[22.5rem] 3xs:w-[27.5rem] p-2 '>
             <div className='mb-5'>
               <Link
-                href='/findMembers'
+                href='/find-members'
                 className='text-[#595f68] text-xl pb-[11px] border-b-2 border-[#3274ba]'
               >
                 신규 팀원 모집
@@ -44,11 +42,7 @@ export default function Home() {
             </div>
 
             <div className='flex flex-col gap-3'>
-              {/* 데이터 임시로 추가 */}
-              <FindMember />
-              <FindMember />
-              <FindMember />
-              <FindMember />
+              <FindMemberList />
             </div>
           </div>
         </div>

@@ -3,28 +3,37 @@
 import React, { useEffect, useState } from 'react';
 import LectureReviewListItem from './LectureReviewListItem';
 import NoneLectureReviewPostInfoListItem from './NoneLectureReviewPostInfoListItem';
-import { useAppSelector } from '@/app/redux/store';
 
-export default function LectureReviewList() {
+export interface ReviewInfoList {
+  cid: number;
+  content: string;
+  rate: number;
+  enrollSems: string;
+  recmndCnt: number;
+  sid: string;
+  pid: number;
+}
+
+interface LectureReviewListProps {
+  reviewInfoList: ReviewInfoList[];
+}
+
+export default function LectureReviewList({
+  reviewInfoList,
+}: LectureReviewListProps) {
   const [isEventListReady, setIsEventListReady] = useState(false);
-  const [isAuthor, setIsAuthor] = useState(true);
 
   useEffect(() => {
-    setIsEventListReady(true);
-  }, []);
+    if (reviewInfoList.length > 0) {
+      setIsEventListReady(true);
+    }
+  }, [reviewInfoList]);
 
   return isEventListReady ? (
     <div>
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
-      <LectureReviewListItem />
+      {reviewInfoList.map((item, index) => (
+        <LectureReviewListItem key={index} reviewItem={item} />
+      ))}
     </div>
   ) : (
     <NoneLectureReviewPostInfoListItem />

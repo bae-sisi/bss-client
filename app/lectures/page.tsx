@@ -1,19 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import LectureList from './components/LectureList';
-import { useAppSelector } from '../redux/store';
 import Loading from '../loading';
 
 export default function Lectures() {
-  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
-
+  const [searchQuery, setSearchQuery] = useState('');
   const [isFindMembersReady, setIsFindMembersReady] = useState(false);
 
   useEffect(() => {
     setIsFindMembersReady(true);
   }, []);
+
+  const handleSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return isFindMembersReady ? (
     <div className='mt-2 px-5 2lg:px-0 overflow-x-auto'>
@@ -35,6 +36,8 @@ export default function Lectures() {
                 className='block pl-7 pt-3 pb-[0.175rem] pr-0 w-full font-normal text-gray-900 bg-transparent border-0 border-b border-gray-400 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
                 placeholder=' '
                 required
+                value={searchQuery}
+                onChange={handleSearchQueryChange}
               />
               <div className='absolute pt-[0.9rem] left-[-0.9rem] flex items-center pl-3 pointer-events-none'>
                 <svg
@@ -58,20 +61,6 @@ export default function Lectures() {
                 과목, 교수명으로 검색
               </p>
             </div>
-            {isAuth ? (
-              <div className='relative ml-auto mt-auto bottom-[-0.75rem]'>
-                <div className='flex justify-end mb-2'>
-                  <div className='flex'>
-                    <Link
-                      href='find-members/register'
-                      className=' text-white bg-[#3870e0] px-4 py-[0.4rem] rounded-[0.2rem] font-light focus:bg-[#3464c2] hover:bg-[#3464c2] box-shadow'
-                    >
-                      등록하기
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ) : null}
           </div>
         </div>
 
@@ -96,7 +85,7 @@ export default function Lectures() {
                       </th>
                     </tr>
                   </thead>
-                  <LectureList />
+                  <LectureList searchQuery={searchQuery} />
                 </table>
               </div>
             </div>

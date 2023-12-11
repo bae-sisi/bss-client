@@ -4,27 +4,43 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import ReviewStars from './ReviewStars';
 
-export default function LectureListItem() {
+// lecturePost 객체의 타입 정의
+interface LecturePost {
+  progressID: number;
+  grade: number;
+  year: number;
+  profName: string;
+  lectureName: string;
+  rate: number;
+}
+
+interface LecturePostItemProps {
+  lecturePost: LecturePost;
+}
+
+export default function LectureListItem({ lecturePost }: LecturePostItemProps) {
   const router = useRouter();
 
   return (
     <tr
       className='border-b dark:border-gray-700 text-xs text-center cursor-pointer hover:bg-gray-50 focus:bg-gray-50'
       onClick={() => {
-        router.push('lectures/645f82d1dfc11e0020d07253');
+        router.push(`lectures/${lecturePost.progressID}`);
       }}
     >
       <th
         scope='row'
         className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
       >
-        1
+        {lecturePost.progressID}
       </th>
-      <td className='hover:underline focus:underline'>데이터베이스시스템</td>
-      <td className='font-medium'>나스리디노프 아지즈</td>
+      <td className='hover:underline focus:underline'>
+        {lecturePost.lectureName}
+      </td>
+      <td className='font-medium'>{lecturePost.profName}</td>
       <td className='font-medium'>
         <span className='text-red-500'>
-          <ReviewStars />
+          <ReviewStars totalRate={lecturePost.rate} />
         </span>
       </td>
     </tr>

@@ -1,9 +1,15 @@
+import { SearchedSubjectList } from './SearchedSubjectList';
+
 type SearchedSubjectListItemProps = {
+  index: number;
+  searchedSubject: SearchedSubjectList;
   isSubjectSelected: boolean;
   onClick: () => void;
 };
 
 export default function SearchedSubjectListItem({
+  index,
+  searchedSubject,
   isSubjectSelected,
   onClick,
 }: SearchedSubjectListItemProps) {
@@ -20,20 +26,17 @@ export default function SearchedSubjectListItem({
           isSubjectSelected ? 'text-blue-800' : ''
         }`}
       >
-        1
+        {index}
       </th>
-      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>3학년</td>
       <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>
-        전공선택
+        {searchedSubject.grade}학년
+      </td>
+
+      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>
+        {searchedSubject.lectureName}
       </td>
       <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>
-        데이터베이스시스템
-      </td>
-      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>01</td>
-      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>3</td>
-      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>아지즈</td>
-      <td className={`${isSubjectSelected ? 'text-blue-800' : ''}`}>
-        화 08 ,09 [S4-1-104(21-104)] 목 07 ,08 [S4-1-206(21-206)]
+        {searchedSubject.profName}
       </td>
     </tr>
   );

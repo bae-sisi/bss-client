@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SubjectInfo {
-  department: string;
-  grade: string;
-  subjectClass: string;
-  section: string;
-  subjectName: string;
+  lectureName: string;
   profName: string;
 }
 
@@ -19,11 +15,7 @@ type initialState = {
 
 const initialState = {
   value: {
-    department: '',
-    grade: '',
-    subjectClass: '',
-    section: '',
-    subjectName: '',
+    lectureName: '',
     profName: '',
     isSubjectSelected: false,
   } as SubjectState,
@@ -36,11 +28,7 @@ export const selectSubjectInModal = createSlice({
     storeSubjectInfo: (state, action: PayloadAction<SubjectInfo>) => {
       return {
         value: {
-          department: action.payload.department,
-          grade: action.payload.grade,
-          subjectClass: action.payload.subjectClass,
-          section: action.payload.section,
-          subjectName: action.payload.subjectName,
+          lectureName: action.payload.lectureName,
           profName: action.payload.profName,
           isSubjectSelected: true,
         },

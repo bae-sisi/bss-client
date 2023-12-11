@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SubjectInfo {
-  subjectName: string;
+  lectureName: string;
   profName: string;
 }
 
@@ -15,7 +15,7 @@ type initialState = {
 
 const initialState = {
   value: {
-    subjectName: '',
+    lectureName: '',
     profName: '',
     isSubjectSelected: false,
   } as SubjectState,
@@ -28,7 +28,7 @@ export const selectSubject = createSlice({
     storeSubjectInfo: (state, action: PayloadAction<SubjectInfo>) => {
       return {
         value: {
-          subjectName: action.payload.subjectName,
+          lectureName: action.payload.lectureName,
           profName: action.payload.profName,
           isSubjectSelected: true,
         },

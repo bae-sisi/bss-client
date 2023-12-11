@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { auth, signIn, signOut } from '../redux/features/authSlice';
+import { signOut } from '../redux/features/authSlice';
 import { useRouter } from 'next/navigation';
 import { AppDispatch, useAppSelector } from '../redux/store';
+import { fetchCurrentUser } from '../utils/fetchCurrentUser';
 
 export default function Navbar() {
   const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
@@ -34,39 +35,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const res = await fetch(`/api/auth/currentuser`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data = await res.json();
-        const authority = data.Authorities;
-
-        switch (authority) {
-          case 'USER':
-            const userInfo = {
-              username: data.username,
-              email: data.email,
-              uid: data.sid,
-              role: data.role,
-            };
-
-            dispatch(signIn(userInfo));
-            break;
-          default:
-            dispatch(signOut());
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-        throw err;
-      }
-    };
-
-    fetchCurrentUser();
+    fetchCurrentUser(dispatch);
   }, [dispatch]);
 
   return (

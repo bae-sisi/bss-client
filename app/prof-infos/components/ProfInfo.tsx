@@ -2,7 +2,24 @@
 
 import React, { useState } from 'react';
 
-export default function ProfInfo() {
+interface ProfInfo {
+  name: string;
+  office: string;
+  phone: string;
+  major: string;
+  email: string;
+  pid: number;
+  isOfficial: boolean;
+  labIntro: string;
+  eduBackground: string;
+  labUrl: string;
+}
+
+interface ProfInfoProps {
+  profInfo: ProfInfo;
+}
+
+export default function ProfInfo({ profInfo }: ProfInfoProps) {
   const [isLabIntroTextFullVisible, setIsLabIntroTextFullVisible] =
     useState(false);
 
@@ -13,13 +30,13 @@ export default function ProfInfo() {
   return (
     <div className='flex gap-4 border rounded-sm p-5 bg-gray-50 shadow-md'>
       <img
-        src='/images/professors/홍장의.jpg'
+        src={`/api/prof/${profInfo.name}/profileImg`}
         alt='profile_image'
         className='h-[9rem] rounded-sm shadow-lg'
       />
       <div className='mt-1'>
         <div className='flex items-center gap-1'>
-          <span className='text-lg font-bold'>홍장의</span>
+          <span className='text-lg font-bold'>{profInfo.name}</span>
           <span className='text-[17px] font-light text-gray-500 pb-[1px]'>
             교수
           </span>
@@ -27,11 +44,11 @@ export default function ProfInfo() {
         <div className='flex flex-col mt-3 gap-[0.325rem]'>
           <div className='flex'>
             <span className='w-[4.75rem] text-sm font-semibold'>학력</span>
-            <span className='font-light'>KAIST</span>
+            <span className='font-light'>{profInfo.eduBackground}</span>
           </div>
           <div className='flex'>
             <span className='w-[4.75rem] text-sm font-semibold'>연구분야</span>
-            <span className='font-light'>소프트웨어공학</span>
+            <span className='font-light'>{profInfo.major}</span>
           </div>
           <div className='flex'>
             <span className='w-[4.75rem] text-sm font-semibold'>연구실</span>
@@ -43,9 +60,7 @@ export default function ProfInfo() {
                   : 'lab-intro-text-overflow-ellipsis whitespace-normal h-8 leading-4'
               } cursor-pointer hover:underline`}
             >
-              소프트웨어 개발, 운영, 및 관리 활동에 체계적이고 정량적인
-              엔지니어링을 개발하고 적용하는 분야에서 고품질의 소프트웨어와
-              서비스를 개발하기 위한 최고의 소프트웨어 엔지니어 그룹입니다.
+              {profInfo.labIntro}
             </span>
           </div>
           <div className='flex'>
@@ -53,32 +68,40 @@ export default function ProfInfo() {
             <span className='font-light'>
               {' '}
               <a
-                href='tel:+820432612261'
+                href={`tel:+82${profInfo.phone}`}
                 className='cursor-pointer hover:underline '
               >
-                261-2261
+                {profInfo.phone}
               </a>{' '}
-              / S4-1 320
+              / {profInfo.office}
             </span>
           </div>
           <div className='flex'>
             <span className='w-[4.75rem] text-sm font-semibold'>이메일</span>
             <a
-              href='mailto:jehong@chungbuk.ac.kr'
+              href={`mailto:${profInfo.email}`}
               className='font-light text-blue-500 cursor-pointer hover:underline'
             >
-              jehong@chungbuk.ac.kr
+              {profInfo.email}
             </a>
           </div>
         </div>
       </div>
-      <a href='http://selab.chungbuk.ac.kr/main/' target='_blank'>
+      {profInfo.labUrl ? (
+        <a href={`${profInfo.labUrl}`} target='_blank'>
+          <img
+            src='/images/icons/home_page.png'
+            alt='profile_image'
+            className='w-[1.5rem] h-[1.5rem] ml-auto cursor-pointer'
+          />
+        </a>
+      ) : (
         <img
-          src='/images/icons/home_page.png'
+          src='/images/icons/home_page_none.png'
           alt='profile_image'
-          className='w-[1.5rem] h-[1.5rem] ml-auto cursor-pointer'
+          className='w-[1.5rem] h-[1.5rem] ml-auto'
         />
-      </a>
+      )}
     </div>
   );
 }

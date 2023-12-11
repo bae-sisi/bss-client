@@ -1,98 +1,92 @@
 'use client';
 
 import Loading from '@/app/loading';
-import { useAppSelector } from '@/app/redux/store';
+import { AppDispatch, useAppSelector } from '@/app/redux/store';
+import { UserInfo, fetchCurrentUser } from '@/app/utils/fetchCurrentUser';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+interface DefaultProps {
+  params: {
+    id: string;
+  };
+}
 
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
   { ssr: false }
 );
 
-export default function EditEvent() {
-  const eventPostInfo = {
-    title: '데이터베이스시스템 팀 프로젝트 팀원 모집',
-    content: `## 1. 졸업작품 전시회
-- **일시**: 2022. 11. 3(금) (9-18시)
-- **장소**: 개신문화관 1층
-- _자세한 일정이 확정되면 추후 공지 예정_
+export default function EditEvent(props: DefaultProps) {
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
 
-## 2. 제출서류
+  const eid = props.params.id;
 
-- **최종본 제출기한**: 2023.10.17.(화) (_*기한 엄수_)
-- 작품소개서 및 작품포스터를 지도교수님께 검토받아 10월 17일까지 comdpt@cbnu.ac.kr(오정은 조교) 메일로 제출해 주시기 바랍니다.
-  - 메일 제출 제목 형식: \`[팀번호]_졸업작품 포스터 및 소개서 제출\`
-- 작년 샘플자료도 함께 업로드하니 참고하여 작성하기 바랍니다.
-
-### (1) 작품소개서
-
-- **작성방법**: "2023졸업작품전시회_작품소개서양식"을 다운받아 팀별 작성
-- **제출방법**: 메일 제출, comdpt@cbnu.ac.kr(오정은 조교)
-  - 파일명: \`[팀번호]_작품제목_작품소개서\` 예: [01-01]_IoT실내환기알람시스템_작품소개서
-
-### (2) 작품포스터
-
-- **작성방법**: PPT 파일, A2 size (420mm * 594mm)
-  - 사이즈 확인하세요! 작게 만들면 나중에 출력할 때 깨져서 사용이 어렵습니다.
-- **제작방법**:
-  - 자유 양식이지만 다음 사항을 포함시킬 것.
-  - 작품명
-  - 지도교수 및 팀명(팀원)
-  - 개발 목적
-  - 구성도: 작품을 한눈에 파악할 수 있는 그림 또는 구성도/개념도, 주요기능, 적용기술
-  - 기대 효과 및 활용 분야
-- **제출방법**: 메일 제출, comdpt@cbnu.ac.kr(오정은 조교)
-  - 파일명: \`[팀번호]_작품제목_작품포스터\` 예: [01-01]_IoT실내환기알람시스템_작품포스터
-
-### (3) 작품전시 준비사항 제출 안내
-
-- 각 팀장이 이메일로 제출: 팀장명, 팀번호, 작품 구현에 필요한 랜선 개수 및 콘센트 개수 회신 (예: 홍길동, 01-01, 랜선 1개, 콘센트 3구 2개)
-- 기타 필요한 사항을 메일로 회신
-- 제출기한 및 방법: comdpt@cbnu.ac.kr 로 10/17(화) 까지 메일 회신
-- 미회신시 발생하는 문제에 대하여 책임지지 않음.
-
-## 3. 팀별 작품 셋팅 일정
-
-_자세한 일정이 확정되면 추후 공지 예정_
-
-**문의사항**: 소프트웨어학과 사무실 오정은 조교 (043-261-2260)`,
-  };
-
-  const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
-  const uid = useAppSelector((state) => state.authReducer.value.uid);
-
+  const [eventPostInfo, setEventPostInfo] = useState({
+    sid: '',
+    eid: '',
+    title: '',
+    created_at: '',
+    content: '',
+    author: '',
+  });
   const [isEditorReady, setIsEditorReady] = useState(false);
-  const [title, setTitle] = useState(eventPostInfo.title);
   const [isTitleValidFail, setIsTitleValidFail] = useState(false);
-  const [editorValue, setEditorValue] = useState(eventPostInfo.content);
 
   const titleRef = useRef<HTMLInputElement>(null);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuth) {
-      router.push('/login');
-      return;
-    }
+    fetchCurrentUser(dispatch).then((res) => {
+      if (res === false || !res.isAuth) {
+        location.href = '/login';
+        return;
+      }
+      fetchEventPost(res);
+    });
 
-    if (uid !== '222') {
-      alert('접근 권한이 없습니다');
-      router.back();
-      return;
-    }
+    const fetchEventPost = async (userInfo: UserInfo) => {
+      try {
+        const res = await fetch(`/api/get/one/event?eid=${eid}`, {
+          method: 'GET',
+        });
+        const data = await res.json();
+        setEventPostInfo({
+          sid: data.sid,
+          eid: data.eid,
+          title: data.title,
+          created_at: data.created_at,
+          content: data.content,
+          author: data.author,
+        });
 
-    setIsEditorReady(true);
-  }, [isAuth, router, uid]);
+        if (userInfo.sid !== data.sid) {
+          alert('접근 권한이 없습니다');
+          router.back();
+          return;
+        }
+        setIsEditorReady(true);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        throw err;
+      }
+    };
+  }, [dispatch, eid, sid, router]);
 
-  const handleEditorChange = useCallback((value?: string) => {
-    setEditorValue(value || '');
-  }, []);
+  const handleEditorChange = useCallback(
+    (value?: string) => {
+      setEventPostInfo({ ...eventPostInfo, content: value || '' });
+    },
+    [eventPostInfo]
+  );
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    setEventPostInfo({ ...eventPostInfo, title: e.target.value });
     setIsTitleValidFail(false);
   };
 
@@ -103,8 +97,8 @@ _자세한 일정이 확정되면 추후 공지 예정_
     router.back();
   };
 
-  const handleEditEventPost = () => {
-    if (!title) {
+  const handleEditEventPost = async () => {
+    if (!eventPostInfo.title) {
       alert('제목을 입력해 주세요');
       window.scrollTo(0, 0);
       titleRef.current?.focus();
@@ -112,14 +106,40 @@ _자세한 일정이 확정되면 추후 공지 예정_
       return;
     }
 
-    if (!editorValue) {
+    if (!eventPostInfo.content) {
       alert('본문을 입력해 주세요');
       window.scrollTo(0, 0);
       return;
     }
 
-    // 임시 게시글로 이동(작성 게시물로 이동해야 함)
-    router.push('/events/645f82d1dfc11e0020d07253');
+    try {
+      const res = await fetch(`/api/auth/update/event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eid,
+          title: eventPostInfo.title,
+          content: eventPostInfo.content,
+        }),
+      });
+
+      switch (res.status) {
+        case 201:
+          // 수정된 게시물로 이동
+          router.push(`/events/${eid}`);
+          break;
+        case 400:
+          location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return isEditorReady ? (
@@ -139,7 +159,7 @@ _자세한 일정이 확정되면 추후 공지 예정_
               }-600 peer`}
               placeholder=' '
               required
-              value={title}
+              value={eventPostInfo.title}
               ref={titleRef}
               onChange={handleTitleChange}
             />
@@ -166,7 +186,7 @@ _자세한 일정이 확정되면 추후 공지 예정_
         <div className='w-full mx-auto overflow-auto'>
           <MDEditor
             autoFocus
-            value={editorValue}
+            value={eventPostInfo.content}
             onChange={handleEditorChange}
             height={500}
             className='md-editor'

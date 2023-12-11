@@ -15,7 +15,7 @@ export default function Mypage() {
   const isAuth = useAppSelector((state) => state.authReducer.value.isAuth);
   const username = useAppSelector((state) => state.authReducer.value.username);
   const email = useAppSelector((state) => state.authReducer.value.email);
-  const uid = useAppSelector((state) => state.authReducer.value.uid);
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
   const selectedPostIds = useAppSelector(
     (state) => state.selectedPostForDeleteSlice.value.selectedPostIds
   );
@@ -43,7 +43,7 @@ export default function Mypage() {
 
   useEffect(() => {
     if (!isAuth) {
-      router.push('/login');
+      location.href = '/login';
       return;
     }
 
@@ -71,7 +71,7 @@ export default function Mypage() {
         <div className='flex flex-col mt-4 tracking-tight text-xs'>
           <div className='flex items-center pb-3 border-b '>
             <span className='w-44 text-sm'>학번</span>
-            <span className='w-80 font-bold'>{uid}</span>
+            <span className='w-80 font-bold'>{sid}</span>
           </div>
           <div className='flex items-center py-3 border-b'>
             <div className='w-44 text-sm'>비밀번호</div>
@@ -194,7 +194,7 @@ export default function Mypage() {
                       </th>
                     </tr>
                   </thead>
-                  {uid === '222' ? <PostList /> : null}
+                  {sid === '222' ? <PostList /> : null}
                 </table>
               </div>
             </div>
