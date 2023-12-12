@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppDispatch, useAppSelector } from '../redux/store';
 import Loading from '../loading';
-import PostList from './PostList';
+// import PostList from './PostList';
 import { useRouter } from 'next/navigation';
 import { initSelectedPostIds } from '../redux/features/selectedPostForDeleteSlice';
 import { useDispatch } from 'react-redux';
@@ -125,7 +125,7 @@ export default function Mypage() {
           </div>
         </div>
 
-        <p className='text-2xl font-semibold mt-24'>작성글</p>
+        {/* <p className='text-2xl font-semibold mt-24'>작성글</p>
         <div className='mt-4 mb-4'>
           <div className='flex'>
             <div className='flex flex-col relative z-0 w-1/2 group'>
@@ -171,9 +171,9 @@ export default function Mypage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <section className='dark:bg-gray-900'>
+        {/* <section className='dark:bg-gray-900'>
           <div className='mx-auto w-full'>
             <div className='border dark:bg-gray-800 relative overflow-hidden rounded-sm'>
               <div className='overflow-x-auto'>
@@ -294,7 +294,7 @@ export default function Mypage() {
               </ul>
             </nav>
           </div>
-        </section>
+        </section> */}
       </div>
     </div>
   ) : (

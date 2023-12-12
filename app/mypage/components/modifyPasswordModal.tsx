@@ -1,6 +1,8 @@
 'use client';
 
+import { useAppSelector } from '@/app/redux/store';
 import { Modal } from 'flowbite-react';
+import { useState } from 'react';
 
 interface ModifyPasswordModalProps {
   openModifyPasswordModal: string | undefined;
@@ -13,11 +15,56 @@ export default function ModifyPasswordModal({
   openModifyPasswordModal,
   setOpenModifyPasswordModal,
 }: ModifyPasswordModalProps) {
-  const handleModifyPassword = () => {
+  const [passwordInfo, setPasswordInfo] = useState({
+    password: '',
+    newPassword: '',
+    newPasswordConfirm: '',
+  });
+  const [isPasswordValidFail, setIsPasswordValidFail] = useState(false);
+  const [isNewPasswordConfirmValidFail, setIsNewPasswordConfirmValidFail] =
+    useState(false);
+
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
+
+  const handleModifyPassword = async () => {
     const confirmResult = confirm('비밀번호를 변경하시겠습니까?');
     if (!confirmResult) return;
-    alert('비밀번호가 변경되었습니다');
-    setOpenModifyPasswordModal(undefined);
+    if (passwordInfo.newPassword !== passwordInfo.newPasswordConfirm) {
+      alert('신규 비밀번호와 재입력 비밀번호가 같지 않습니다');
+      setIsNewPasswordConfirmValidFail(true);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/auth/user/change/password/${sid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          password: passwordInfo.password,
+          newPassword: passwordInfo.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      switch (res.status) {
+        case 202:
+          alert('비밀번호가 정상적으로 변경되었습니다');
+          setOpenModifyPasswordModal(undefined);
+          break;
+        case 400:
+          alert('현재 비밀번호가 일치하지 않습니다');
+          setIsPasswordValidFail(true);
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return (
@@ -35,7 +82,13 @@ export default function ModifyPasswordModal({
               <span className='w-[9rem]'>현재 비밀번호</span>
               <input
                 type='password'
-                className='h-8 border w-[14rem] px-2 tracking-widest rounded-[0.2rem] border-[#b4b4b4]'
+                className={`h-8 border w-[14rem] px-2 tracking-widest rounded-[0.2rem] border-${
+                  isPasswordValidFail ? 'red-500' : '[#b4b4b4]'
+                }`}
+                value={passwordInfo.password}
+                onChange={(e) =>
+                  setPasswordInfo({ ...passwordInfo, password: e.target.value })
+                }
               />
             </div>
             <div className='flex items-center'>
@@ -43,13 +96,29 @@ export default function ModifyPasswordModal({
               <input
                 type='password'
                 className='h-8 border w-[14rem] px-2 tracking-widest rounded-[0.2rem] border-[#b4b4b4]'
+                value={passwordInfo.newPassword}
+                onChange={(e) =>
+                  setPasswordInfo({
+                    ...passwordInfo,
+                    newPassword: e.target.value,
+                  })
+                }
               />
             </div>
             <div className='flex items-center'>
               <span className='w-[9rem]'>신규 비밀번호 재입력</span>
               <input
                 type='password'
-                className='h-8 border w-[14rem] px-2 tracking-widest rounded-[0.2rem] border-[#b4b4b4]'
+                className={`h-8 border w-[14rem] px-2 tracking-widest rounded-[0.2rem] border-${
+                  isNewPasswordConfirmValidFail ? 'red-500' : '[#b4b4b4]'
+                }`}
+                value={passwordInfo.newPasswordConfirm}
+                onChange={(e) =>
+                  setPasswordInfo({
+                    ...passwordInfo,
+                    newPasswordConfirm: e.target.value,
+                  })
+                }
               />
             </div>
           </div>
