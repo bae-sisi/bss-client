@@ -25,8 +25,6 @@ export default function FindMemberList() {
     fetchFindMemberList();
   }, []);
 
-  console.log(findMemberList);
-
   return (
     <div>
       {findMemberList.length !== 0 ? (

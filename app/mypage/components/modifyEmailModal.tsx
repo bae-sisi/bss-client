@@ -1,6 +1,10 @@
 'use client';
 
+import { setGlobalEmail } from '@/app/redux/features/authSlice';
+import { AppDispatch, useAppSelector } from '@/app/redux/store';
 import { Modal } from 'flowbite-react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 interface ModifyEmailModalProps {
   openModifyEmailModal: string | undefined;
@@ -13,11 +17,49 @@ export default function ModifyEmailModal({
   openModifyEmailModal,
   setOpenModifyEmailModal,
 }: ModifyEmailModalProps) {
-  const handleModifyUsername = () => {
+  const [emailState, setEmailState] = useState('');
+
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
+  const username = useAppSelector((state) => state.authReducer.value.username);
+  const email = useAppSelector((state) => state.authReducer.value.email);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleModifyUsername = async () => {
     const confirmResult = confirm('이메일을 변경하시겠습니까?');
     if (!confirmResult) return;
-    alert('이메일이 변경되었습니다');
-    setOpenModifyEmailModal(undefined);
+
+    try {
+      const res = await fetch(`/api/auth/user/change/info/${sid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          emailState,
+        }),
+      });
+
+      const data = await res.json();
+
+      switch (res.status) {
+        case 202:
+          alert('이메일이 변경되었습니다');
+          setEmailState(email);
+          dispatch(setGlobalEmail(emailState));
+          setOpenModifyEmailModal(undefined);
+          break;
+        case 400:
+          // location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return (
@@ -37,10 +79,9 @@ export default function ModifyEmailModal({
                 type='text'
                 placeholder='abc@gmail.com'
                 className='h-8 border w-[16rem] px-2 border-[#b4b4b4] text-sm rounded-[0.2rem] placeholder:text-gray-400'
+                value={emailState}
+                onChange={(e) => setEmailState(e.target.value)}
               />
-              <button className='text-white bg-[#3870e0] w-[5rem] h-8 rounded-[0.2rem] font-light focus:bg-[#3464c2] hover:bg-[#3464c2] box-shadow'>
-                중복확인
-              </button>
             </div>
           </div>
         </div>

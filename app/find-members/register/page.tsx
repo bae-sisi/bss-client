@@ -61,8 +61,6 @@ export default function RegisterFindMemeber() {
   // currentDate.setDate(currentDate.getDate() + 1);
   const end_date_reqPosition = currentDate.toISOString().slice(0, 16);
 
-  console.log(end_date_reqPosition);
-
   useEffect(() => {
     fetchCurrentUser(dispatch).then((res) => {
       if (res === false || !res.isAuth) {

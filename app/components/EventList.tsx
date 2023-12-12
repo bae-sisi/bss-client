@@ -24,8 +24,6 @@ export default function EventList() {
     fetchEventList();
   }, []);
 
-  console.log(eventList);
-
   return (
     <div>
       {eventList.length !== 0 ? (

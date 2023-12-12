@@ -16,9 +16,9 @@ export default function Mypage() {
   const username = useAppSelector((state) => state.authReducer.value.username);
   const email = useAppSelector((state) => state.authReducer.value.email);
   const sid = useAppSelector((state) => state.authReducer.value.sid);
-  const selectedPostIds = useAppSelector(
-    (state) => state.selectedPostForDeleteSlice.value.selectedPostIds
-  );
+  // const selectedPostIds = useAppSelector(
+  //   (state) => state.selectedPostForDeleteSlice.value.selectedPostIds
+  // );
 
   const [openModifyPasswordModal, setOpenModifyPasswordModal] = useState<
     string | undefined
@@ -50,18 +50,18 @@ export default function Mypage() {
     setIsMypageReady(true);
   }, [isAuth, router]);
 
-  const handleDeleteSelectedPost = () => {
-    if (!selectedPostIds.length) {
-      alert('삭제할 게시글을 선택해 주세요');
-      return;
-    }
+  // const handleDeleteSelectedPost = () => {
+  //   if (!selectedPostIds.length) {
+  //     alert('삭제할 게시글을 선택해 주세요');
+  //     return;
+  //   }
 
-    const confirmResult = confirm(
-      `${selectedPostIds.length}개의 게시글을 삭제하시겠습니까?`
-    );
-    if (!confirmResult) return;
-    dispatch(initSelectedPostIds());
-  };
+  //   const confirmResult = confirm(
+  //     `${selectedPostIds.length}개의 게시글을 삭제하시겠습니까?`
+  //   );
+  //   if (!confirmResult) return;
+  //   dispatch(initSelectedPostIds());
+  // };
 
   return isMypageReady ? (
     <div className='mt-2 px-5 2lg:px-0 overflow-x-auto'>
@@ -102,7 +102,6 @@ export default function Mypage() {
               <ModifyUsernameModal
                 openModifyUsernameModal={openModifyUsernameModal}
                 setOpenModifyUsernameModal={setOpenModifyUsernameModal}
-                username={username}
               />
             ) : null}
           </div>
@@ -119,7 +118,6 @@ export default function Mypage() {
               <ModifyEmailModal
                 openModifyEmailModal={openModifyEmailModal}
                 setOpenModifyEmailModal={setOpenModifyEmailModal}
-                // email={email}
               />
             ) : null}
           </div>

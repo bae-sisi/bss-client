@@ -44,8 +44,17 @@ export const auth = createSlice({
     signOut: () => {
       return initialState;
     },
+
+    setGlobalUsername: (state, action: PayloadAction<string>) => {
+      state.value.username = action.payload;
+    },
+
+    setGlobalEmail: (state, action: PayloadAction<string>) => {
+      state.value.email = action.payload;
+    },
   },
 });
 
-export const { signIn, signOut } = auth.actions;
+export const { signIn, signOut, setGlobalUsername, setGlobalEmail } =
+  auth.actions;
 export default auth.reducer;

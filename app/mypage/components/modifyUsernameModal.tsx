@@ -1,25 +1,65 @@
 'use client';
 
+import { setGlobalUsername } from '@/app/redux/features/authSlice';
+import { AppDispatch, useAppSelector } from '@/app/redux/store';
 import { Modal } from 'flowbite-react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 interface ModifyUsernameModalProps {
   openModifyUsernameModal: string | undefined;
   setOpenModifyUsernameModal: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
-  username: string;
 }
 
 export default function ModifyUsernameModal({
   openModifyUsernameModal,
   setOpenModifyUsernameModal,
-  username,
 }: ModifyUsernameModalProps) {
-  const handleModifyUsername = () => {
+  const [usernameState, setUsernameState] = useState('');
+
+  const sid = useAppSelector((state) => state.authReducer.value.sid);
+  const username = useAppSelector((state) => state.authReducer.value.username);
+  const email = useAppSelector((state) => state.authReducer.value.email);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleModifyUsername = async () => {
     const confirmResult = confirm('이름을 변경하시겠습니까?');
     if (!confirmResult) return;
-    alert('이름이 변경되었습니다');
-    setOpenModifyUsernameModal(undefined);
+
+    try {
+      const res = await fetch(`/api/auth/user/change/info/${sid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+        }),
+      });
+
+      const data = await res.json();
+
+      switch (res.status) {
+        case 202:
+          alert('이름이 변경되었습니다');
+          setUsernameState(username);
+          dispatch(setGlobalUsername(usernameState));
+          setOpenModifyUsernameModal(undefined);
+          break;
+        case 400:
+          // location.href = '/login';
+          break;
+        default:
+          alert('정의되지 않은 http status code입니다');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      throw err;
+    }
   };
 
   return (
@@ -47,6 +87,8 @@ export default function ModifyUsernameModal({
               <input
                 type='text'
                 className='h-8 border w-[14rem] px-2 border-[#b4b4b4] rounded-[0.2rem] text-sm'
+                value={usernameState}
+                onChange={(e) => setUsernameState(e.target.value)}
               />
             </div>
           </div>
