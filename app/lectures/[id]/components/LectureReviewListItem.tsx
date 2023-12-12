@@ -3,11 +3,11 @@
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import ReviewStars from '../../components/ReviewStars';
-import { ReviewInfo } from './LectureReviewList';
+import { LectureReviewInfo } from '../page';
 
 interface LectureReviewListItemProps {
   id: string;
-  item: ReviewInfo;
+  item: LectureReviewInfo;
 }
 
 export default function LectureReviewListItem({

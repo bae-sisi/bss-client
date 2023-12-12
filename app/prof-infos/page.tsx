@@ -39,7 +39,7 @@ export default function ProfInfos() {
           <span className='text-2xl font-semibold'>교수 정보</span>
         </p>
         <div className='mt-10 mb-10 grid grid-cols-2 gap-7'>
-          {false ? (
+          {profInfos.length !== 0 ? (
             profInfos.map((profInfo, index) => (
               <ProfInfo key={index} profInfo={profInfo} />
             ))

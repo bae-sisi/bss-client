@@ -13,6 +13,16 @@ interface DefaultProps {
   };
 }
 
+export interface LectureReviewInfo {
+  cid: number;
+  content: string;
+  enrollSems: string;
+  progress_id: number;
+  rate: number;
+  recmndCnt: number;
+  user_id: string;
+}
+
 export default function LectureInfoDetail(props: DefaultProps) {
   const [progressInfo, setProgressInfo] = useState({
     pid: 0,
@@ -75,6 +85,11 @@ export default function LectureInfoDetail(props: DefaultProps) {
           attending: evaluationData.attending,
         });
 
+        // 추천 순으로 정렬
+        lectureReviewInfoResData.sort(
+          (a: LectureReviewInfo, b: LectureReviewInfo) => b.rate - a.rate
+        );
+
         setLectureReviewInfoList(lectureReviewInfoResData);
 
         setIsFindMemberPostReady(true);
@@ -86,7 +101,7 @@ export default function LectureInfoDetail(props: DefaultProps) {
     };
 
     fetchLecturInfoPost();
-  }, [pid, router]);
+  }, [lectureReviewInfoList, pid, router]);
 
   return isFindMemberPostReady ? (
     <div className='mt-6 mb-24 px-5 2lg:px-0 overflow-x-auto'>

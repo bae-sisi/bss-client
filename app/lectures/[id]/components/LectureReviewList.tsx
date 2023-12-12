@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import LectureReviewListItem from './LectureReviewListItem';
 import NoneLectureReviewPostInfoListItem from './NoneLectureReviewPostInfoListItem';
-
-export interface ReviewInfo {
-  cid: number;
-  content: string;
-  enrollSems: string;
-  progress_id: number;
-  rate: number;
-  recmndCnt: number;
-  user_id: string;
-}
+import { LectureReviewInfo } from '../page';
 
 interface LectureReviewListProps {
   pid: string;
-  lectureReviewInfoList: ReviewInfo[];
+  lectureReviewInfoList: LectureReviewInfo[];
 }
 
 export default function LectureReviewList({
